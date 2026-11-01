@@ -1,0 +1,65 @@
+'use strict';
+// Checks every part of the setup and says what is missing. Run:  node check.js
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+const { ROOT, env, runFFmpeg } = require('./src/lib');
+
+const ok = m => console.log('  ✓ ' + m);
+const bad = m => { console.log('  ✗ ' + m); problems++; };
+let problems = 0;
+
+(async () => {
+  console.log('\nAI Wala setup check\n');
+
+  if (!fs.existsSync(path.join(ROOT, '.env'))) bad('.env file not found. Copy .env.example to .env and fill it in.');
+  else ok('.env file found');
+
+  try {
+    const tmp = path.join(os.tmpdir(), 'aiwala-check.mp4');
+    await runFFmpeg(['-y', '-f', 'lavfi', '-i', 'color=c=black:s=320x240:d=0.5', tmp]);
+    fs.rmSync(tmp, { force: true });
+    ok('FFmpeg works');
+  } catch (e) { bad('FFmpeg not working: ' + e.message + ' (run: npm install)'); }
+
+  const key = env('GEMINI_API_KEY');
+  if (!key) bad('GEMINI_API_KEY missing');
+  else {
+    try {
+      const model = env('GEMINI_TEXT_MODEL', 'gemini-3.8-flash');
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: 'Reply with the word OK.' }] }] })
+      });
+      if (r.ok) ok(`Gemini story writer works (${model})`);
+      else bad(`Gemini story writer error [${r.status}]: ${(await r.text()).slice(0, 200)}`);
+    } catch (e) { bad('Gemini not reachable: ' + e.message); }
+  }
+
+  const acc = env('CF_ACCOUNT_ID'), tok = env('CF_API_TOKEN');
+  if (!acc || !tok) bad('CF_ACCOUNT_ID / CF_API_TOKEN missing (Cloudflare images)');
+  else {
+    try {
+      const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${acc}/ai/run/${env('CF_IMAGE_MODEL', '@cf/black-forest-labs/flux-1-schnell')}`, {
+        method: 'POST', headers: { Authorization: `Bearer ${tok}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: 'a cute small green robot waving, 3D cartoon', steps: 4 })
+      });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok && d?.result?.image) {
+        fs.writeFileSync(path.join(ROOT, 'check-image.jpg'), Buffer.from(d.result.image, 'base64'));
+        ok('Cloudflare images work (test picture saved as check-image.jpg)');
+      } else bad(`Cloudflare image error [${r.status}]: ${JSON.stringify(d.errors || d).slice(0, 200)}`);
+    } catch (e) { bad('Cloudflare not reachable: ' + e.message); }
+  }
+
+  if (!env('YT_CLIENT_ID') || !env('YT_CLIENT_SECRET')) bad('YT_CLIENT_ID / YT_CLIENT_SECRET missing');
+  else if (!fs.existsSync(path.join(ROOT, 'youtube-token.json'))) bad('YouTube not connected yet. Run: node auth.js');
+  else {
+    const { channelInfo } = require('./src/youtube');
+    const name = await channelInfo();
+    if (name) ok(`YouTube connected: ${name}`); else bad('YouTube login not working. Run: node auth.js');
+  }
+
+  console.log(problems ? `\n${problems} problem(s) to fix.\n` : '\nAll good! Test with:  node make-video.js --no-upload\n');
+  process.exit(problems ? 1 : 0);
+})();

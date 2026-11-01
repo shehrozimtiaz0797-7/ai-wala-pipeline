@@ -1,0 +1,139 @@
+=====================================================================
+  AI WALA PIPELINE — automatic cartoon story Shorts (free setup)
+  Story -> pictures -> voice -> video -> YouTube upload, every day
+=====================================================================
+
+WHAT IT DOES (every run)
+  1. Gemini writes a new 8-scene story with Zain, Chotu Bot and Nani
+     (Roman Urdu subtitles + Urdu voice). It never repeats old stories.
+  2. Cloudflare (free) draws a cartoon picture for every scene.
+  3. Gemini (free) records the voice-over.
+  4. FFmpeg makes a vertical Short: slow zoom/pan on each picture,
+     subtitles, "AI WALA" brand, optional background music.
+  5. It uploads to YouTube (private by default, marked as AI content).
+
+
+---------------------------------------------------------------------
+STEP 1 — Put the folder in the right place
+---------------------------------------------------------------------
+  Unzip so you have:   C:\Users\AAUEC\ai-wala-pipeline
+  (next to your youtube-automation-agent folder)
+
+  Open Command Prompt and run (one line at a time):
+      cd C:\Users\AAUEC\ai-wala-pipeline
+      npm install
+
+
+---------------------------------------------------------------------
+STEP 2 — Copy your keys from the other tool (automatic)
+---------------------------------------------------------------------
+      node import-keys.js
+
+  This copies your Gemini key, YouTube Client ID/Secret and your
+  YouTube login. It creates the .env settings file.
+
+
+---------------------------------------------------------------------
+STEP 3 — Free Cloudflare account (for the pictures)
+---------------------------------------------------------------------
+  1. Go to https://dash.cloudflare.com/sign-up and make a free account.
+  2. In the left menu open  AI  ->  Workers AI.
+  3. Click "Use REST API".
+     - Copy the  Account ID.
+     - Click "Create a Workers AI API Token" -> "Create API Token" -> "Copy API Token"
+       (it is shown only once).
+  4. Open the .env file with Notepad:
+         notepad .env
+     and fill in:
+         CF_ACCOUNT_ID=your account id
+         CF_API_TOKEN=your token
+     Save and close.
+
+  Free limit: 10,000 "neurons" per day, enough for well over 100
+  pictures a day. One Short uses 8 pictures.
+
+
+---------------------------------------------------------------------
+STEP 4 — Stop the YouTube login from expiring (important, 1 minute)
+---------------------------------------------------------------------
+  While your Google app is in "Testing" mode, Google logs you out every
+  7 days and the daily upload stops.
+  1. Open https://console.cloud.google.com  (same project as before)
+  2. Google Auth Platform (or OAuth consent screen) -> Audience
+  3. Click "Publish app" -> Confirm.  (No review is needed for personal use.)
+  4. Then sign in again once:
+         node auth.js
+
+
+---------------------------------------------------------------------
+STEP 5 — Check everything
+---------------------------------------------------------------------
+      node check.js
+
+  Every line should show a tick. It also saves check-image.jpg so you
+  can see a test picture.
+
+
+---------------------------------------------------------------------
+STEP 6 — Make a test video (NOT uploaded)
+---------------------------------------------------------------------
+      node make-video.js --no-upload
+
+  Takes about 5-15 minutes on your PC. The video appears in:
+      output\<date>_<title>\final.mp4
+  Watch it. If you like it, go to step 7.
+
+  With your own idea:
+      node make-video.js --no-upload --topic "Nani pehli baar ChatGPT use karti hai"
+
+
+---------------------------------------------------------------------
+STEP 7 — Turn on the daily automatic video
+---------------------------------------------------------------------
+  Double-click  setup-schedule.bat  and type a time, e.g. 10:00
+  Every day at that time a new video is made and uploaded.
+  The PC must be ON (not shut down) at that time.
+
+  Make one video right now: double-click  make-one-now.bat
+  Stop the daily video:     double-click  remove-schedule.bat
+
+
+---------------------------------------------------------------------
+SETTINGS (.env file — open with: notepad .env)
+---------------------------------------------------------------------
+  PRIVACY=private          private / unlisted / public
+  PUBLISH_AT_HOUR=19       video goes public automatically at 7 PM
+                           (leave empty to keep it private)
+  VIDEOS_PER_RUN=1         videos per day (2-3 is fine on the free tier)
+  GEMINI_TTS_VOICE=Kore    try: Puck, Charon, Fenrir, Aoede, Leda, Orus, Zephyr
+  VOICE_SCRIPT=urdu        urdu = better pronunciation, roman = reads Roman Urdu
+  MUSIC_VOLUME=0.10        background music loudness
+  KEEP_DAYS=7              old video folders are deleted after this many days
+
+  Background music: put .mp3 files in the "music" folder (get free music
+  from YouTube Studio -> Audio Library). One is picked at random.
+
+  Characters, art style and story ideas: edit  characters.js  in Notepad.
+
+
+---------------------------------------------------------------------
+REVIEW / DELETE A VIDEO
+---------------------------------------------------------------------
+  Videos upload as Private (or scheduled). Check them in
+  YouTube Studio -> Content. Don't like one? Delete it there.
+  Recommended: keep PRIVACY=private for the first week and check every
+  video, then set PUBLISH_AT_HOUR=19 once you trust the quality.
+
+
+---------------------------------------------------------------------
+IF SOMETHING GOES WRONG
+---------------------------------------------------------------------
+  Everything is written to:  logs\pipeline.log  and  logs\daily-run.txt
+  Send the last lines of that file to Claude.
+
+  "busy/limited [429]" or "[503]"  -> free limit or Gemini busy; it
+                                      retries by itself.
+  "YouTube login expired"          -> do step 4, then node auth.js
+  "FFmpeg not working"             -> run:  npm install
+                                      then: npm install-scripts approve ffmpeg-static
+                                      then: npm rebuild ffmpeg-static
