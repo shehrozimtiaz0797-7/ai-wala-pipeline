@@ -59,9 +59,15 @@ async function login() {
   console.log(`\n✓ Connected to YouTube channel: ${ch || '(name unavailable)'}\n`);
 }
 
-async function accessToken() {
+function refreshToken() {
+  // Cloud (GitHub Actions): the login is stored as the secret YT_REFRESH_TOKEN.
+  if (env('YT_REFRESH_TOKEN')) return env('YT_REFRESH_TOKEN');
   if (!fs.existsSync(TOKEN_FILE)) throw new Error('YouTube is not connected yet. Run: node auth.js');
-  const { refresh_token } = JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf8'));
+  return JSON.parse(fs.readFileSync(TOKEN_FILE, 'utf8')).refresh_token;
+}
+
+async function accessToken() {
+  const refresh_token = refreshToken();
   const { id, secret } = client();
   const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -69,8 +75,8 @@ async function accessToken() {
   });
   const tok = await res.json();
   if (!tok.access_token) {
-    throw new Error('YouTube login expired (' + (tok.error || res.status) + '). Run "node auth.js" again. ' +
-      'Tip: publish your Google app (START-HERE.txt step 4) so the login stops expiring every 7 days.');
+    throw new Error('YouTube login expired (' + (tok.error || res.status) + '). On your laptop run "node auth.js", then "node print-secrets.js" ' +
+      'and paste the new YT_REFRESH_TOKEN into GitHub (Settings -> Secrets -> Actions).');
   }
   return tok.access_token;
 }
