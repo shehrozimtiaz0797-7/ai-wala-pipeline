@@ -25,15 +25,26 @@ let problems = 0;
   const key = env('GEMINI_API_KEY');
   if (!key) bad('GEMINI_API_KEY missing');
   else {
-    try {
-      const model = env('GEMINI_TEXT_MODEL', 'gemini-3.8-flash');
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: 'Reply with the word OK.' }] }] })
-      });
-      if (r.ok) ok(`Gemini story writer works (${model})`);
-      else bad(`Gemini story writer error [${r.status}]: ${(await r.text()).slice(0, 200)}`);
-    } catch (e) { bad('Gemini not reachable: ' + e.message); }
+    const models = [...new Set([env('GEMINI_TEXT_MODEL', 'gemini-3.8-flash'),
+      ...env('GEMINI_TEXT_FALLBACKS', 'gemini-3.5-flash-lite').split(/[,\s]+/).filter(Boolean)])];
+    let working = null; let busy = 0; let invalid = null;
+    for (const model of models) {
+      try {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: 'Reply with the word OK.' }] }] })
+        });
+        if (r.ok) { working = model; break; }
+        const body = (await r.text()).slice(0, 200);
+        if (r.status === 503 || r.status === 429) { busy++; console.log(`  • ${model} is busy right now [${r.status}]`); }
+        else if (/API_KEY_INVALID|API key not valid/i.test(body)) { invalid = body; break; }
+        else console.log(`  • ${model} error [${r.status}]: ${body}`);
+      } catch (e) { console.log(`  • ${model} not reachable: ${e.message}`); }
+    }
+    if (working) ok(`Gemini story writer works (${working})`);
+    else if (invalid) bad('Gemini key is not valid — paste a correct GEMINI_API_KEY');
+    else if (busy) ok('Gemini key is fine, but all models are busy right now (temporary) — videos will retry automatically');
+    else bad('Gemini story writer not working');
   }
 
   const acc = env('CF_ACCOUNT_ID'), tok = env('CF_API_TOKEN');

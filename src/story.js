@@ -63,44 +63,67 @@ function parseJSON(text) {
   }
 }
 
+// Models to try in order. If the first is busy (503) or rate-limited, the next one writes the story.
+function storyModels() {
+  const main = env('GEMINI_TEXT_MODEL', 'gemini-3.8-flash');
+  const backups = env('GEMINI_TEXT_FALLBACKS', 'gemini-3.5-flash-lite').split(/[,\s]+/).filter(Boolean);
+  return [...new Set([main, ...backups])];
+}
+
 async function writeStory(topic, kind = 'short') {
   const fmt = format(kind);
   const key = requireEnv('GEMINI_API_KEY', 'Get one at https://aistudio.google.com/apikey');
-  const model = env('GEMINI_TEXT_MODEL', 'gemini-3.8-flash');
   const sceneCount = fmt.scenes();
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+  const models = storyModels();
+  let lastError = null;
 
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    log(`Writing ${fmt.label} story (${sceneCount} scenes) with ${model}${topic ? ` (topic: ${topic})` : ''}...`);
-    const res = await fetchRetry(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: buildPrompt(topic, sceneCount, fmt) }] }],
-        generationConfig: { temperature: 0.9, responseMimeType: 'application/json' }
-      })
-    }, 'Gemini story');
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
-    try {
-      const story = parseJSON(text);
-      const scenes = (story.scenes || []).filter(s => s && s.subtitle && s.image_prompt);
-      if (!story.title || scenes.length < Math.max(4, Math.floor(sceneCount * 0.7))) throw new Error(`story incomplete (${scenes.length} scenes)`);
-      story.scenes = scenes.slice(0, sceneCount).map(s => ({
-        subtitle: String(s.subtitle).trim(),
-        voice: String(s.voice || s.subtitle).trim(),
-        image_prompt: String(s.image_prompt).trim()
-      }));
-      story.tags = Array.isArray(story.tags) ? story.tags.map(String).slice(0, 15) : [];
-      story.title = String(story.title).slice(0, 95);
-      story.kind = fmt.kind;
-      log(`Story ready: "${story.title}" (${story.scenes.length} scenes)`);
-      return story;
-    } catch (err) {
-      log(`Story attempt ${attempt} was not usable (${err.message}), trying again...`);
+  for (const [m, model] of models.entries()) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+    const isLast = m === models.length - 1;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      log(`Writing ${fmt.label} story (${sceneCount} scenes) with ${model}${topic ? ` (topic: ${topic})` : ''}...`);
+      let data;
+      try {
+        // Fewer retries on the main model so a busy model hands over to the backup quickly.
+        const res = await fetchRetry(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: buildPrompt(topic, sceneCount, fmt) }] }],
+            generationConfig: { temperature: 0.9, responseMimeType: 'application/json' }
+          })
+        }, `Gemini story (${model})`, isLast ? 6 : 3);
+        data = await res.json();
+      } catch (err) {
+        lastError = err;
+        if (!isLast && /\[(429|500|502|503|504|404)\]|busy|FREE limit/i.test(err.message)) {
+          log(`${model} is busy or unavailable, switching to ${models[m + 1]}...`);
+          break; // next model
+        }
+        throw err;
+      }
+      const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+      try {
+        const story = parseJSON(text);
+        const scenes = (story.scenes || []).filter(s => s && s.subtitle && s.image_prompt);
+        if (!story.title || scenes.length < Math.max(4, Math.floor(sceneCount * 0.7))) throw new Error(`story incomplete (${scenes.length} scenes)`);
+        story.scenes = scenes.slice(0, sceneCount).map(s => ({
+          subtitle: String(s.subtitle).trim(),
+          voice: String(s.voice || s.subtitle).trim(),
+          image_prompt: String(s.image_prompt).trim()
+        }));
+        story.tags = Array.isArray(story.tags) ? story.tags.map(String).slice(0, 15) : [];
+        story.title = String(story.title).slice(0, 95);
+        story.kind = fmt.kind;
+        log(`Story ready: "${story.title}" (${story.scenes.length} scenes, ${model})`);
+        return story;
+      } catch (err) {
+        lastError = err;
+        log(`Story attempt ${attempt} was not usable (${err.message}), trying again...`);
+      }
     }
   }
-  throw new Error('Could not get a usable story from Gemini after 3 tries');
+  throw new Error('Could not get a usable story from Gemini: ' + (lastError ? lastError.message : 'unknown error'));
 }
 
 module.exports = { writeStory, addHistory, readHistory };
