@@ -23,7 +23,8 @@ function loadEnv() {
 loadEnv();
 
 function env(name, fallback) {
-  const v = process.env[name];
+  // Trim spaces/line breaks: a secret pasted with a leading space would otherwise be rejected.
+  const v = process.env[name] === undefined ? undefined : String(process.env[name]).trim();
   return v === undefined || v === '' ? fallback : v;
 }
 
