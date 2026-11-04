@@ -29,11 +29,12 @@ jobs:
       # ----- Settings (edit here) -----
       LONGS_PER_RUN: "1"
       SHORTS_PER_RUN: "4"
-      LONG_PUBLISH_HOURS: "20"
-      SHORT_PUBLISH_HOURS: "12,15,18,22"
+      # "none" = go public right after upload (no scheduling)
+      LONG_PUBLISH_HOURS: "none"
+      SHORT_PUBLISH_HOURS: "none"
       LONG_SCENES: "32"
       SHORT_SCENES: "6"
-      PRIVACY: private
+      PRIVACY: public
       GEMINI_TEXT_MODEL: gemini-3.8-flash
       GEMINI_TTS_MODEL: gemini-3.8-flash-tts
       GEMINI_TTS_VOICE: Kore
