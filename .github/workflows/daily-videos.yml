@@ -2,8 +2,12 @@ name: AI Wala daily videos
 
 on:
   schedule:
-    # 10:07 UTC = 6:07 PM Malaysia time (GitHub may start it a few minutes late).
-    - cron: "7 10 * * *"
+    # Times are UTC (Malaysia = UTC+8). GitHub may start a run some minutes late.
+    - cron: "7 1 * * *"     # 9:07 AM Malaysia  -> 1 Short
+    - cron: "7 4 * * *"     # 12:07 PM Malaysia -> 1 Short
+    - cron: "7 7 * * *"     # 3:07 PM Malaysia  -> 1 Short
+    - cron: "7 10 * * *"    # 6:07 PM Malaysia  -> 1 Short
+    - cron: "37 11 * * *"   # 7:37 PM Malaysia  -> 1 long video (goes public ~8 PM)
   workflow_dispatch:
     inputs:
       what:
@@ -66,11 +70,17 @@ jobs:
 
       - name: Make and upload videos
         run: |
-          case "${{ github.event.inputs.what }}" in
-            "1 Short only") node make-video.js --count 1 ;;
-            "1 long video only") node make-video.js --long ;;
-            *) node make-video.js ;;
-          esac
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            if [ "${{ github.event.schedule }}" = "37 11 * * *" ]; then node make-video.js --long
+            else node make-video.js --count 1
+            fi
+          else
+            case "${{ github.event.inputs.what }}" in
+              "1 Short only") node make-video.js --count 1 ;;
+              "1 long video only") node make-video.js --long ;;
+              *) node make-video.js ;;
+            esac
+          fi
 
       - name: Save story history (so stories never repeat)
         if: always()
