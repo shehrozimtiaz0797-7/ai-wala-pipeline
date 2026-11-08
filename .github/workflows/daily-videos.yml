@@ -68,9 +68,6 @@ jobs:
           sudo apt-get install -y -qq ffmpeg fonts-liberation > /dev/null
           ffmpeg -version | head -1
 
-      - name: Check keys (safe preview, first and last 4 characters only)
-        run: node keys-preview.js
-
       - name: Make and upload videos
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
