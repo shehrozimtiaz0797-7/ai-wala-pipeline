@@ -1,10 +1,8 @@
 name: AI Wala daily videos
 
 on:
-  schedule:
-    # 5 runs a day, 1 Short each, ~25 min before the target time (Malaysia time):
-    # 8:35 PM, 10:35 PM, 12:35 AM, 2:35 AM, 4:35 AM -> live by 9 PM, 11 PM, 1 AM, 3 AM, 5 AM
-    - cron: "35 12,14,16,18,20 * * *"
+  # No GitHub 'schedule' here: runs are started on time by cron-job.org
+  # (GitHub's own schedule is often late or skipped).
   workflow_dispatch:
     inputs:
       what:
