@@ -53,7 +53,7 @@ let problems = 0;
     try {
       const r = await fetch(`https://api.cloudflare.com/client/v4/accounts/${acc}/ai/run/${env('CF_IMAGE_MODEL', '@cf/black-forest-labs/flux-1-schnell')}`, {
         method: 'POST', headers: { Authorization: `Bearer ${tok}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: 'a cute small green robot waving, 3D cartoon', steps: 4 })
+        body: JSON.stringify({ prompt: 'an empty dark hotel hallway at night, cinematic', steps: 4 })
       });
       const d = await r.json().catch(() => ({}));
       if (r.ok && d?.result?.image) {

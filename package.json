@@ -2,7 +2,7 @@
   "name": "ai-wala-pipeline",
   "version": "1.0.0",
   "private": true,
-  "description": "AI Wala: automatic cartoon story Shorts — story, pictures, voice, video and YouTube upload",
+  "description": "AI Wala: automatic Urdu horror POV Shorts — story, pictures, voice, video and YouTube upload",
   "scripts": {
     "check": "node check.js",
     "auth": "node auth.js",

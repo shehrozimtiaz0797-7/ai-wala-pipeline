@@ -1,4 +1,12 @@
 =====================================================================
+  UPDATE (Nov 2026): AI Wala is now an URDU HORROR POV channel.
+  The cartoon characters are gone. Each Short is a creepy "rules" story
+  told in Urdu (voice) with Roman Urdu captions, same format as
+  Keep Your Eyes Shut. Videos are started by cron-job.org, not by GitHub's
+  own schedule. The notes below about cartoons are from the old version.
+=====================================================================
+
+=====================================================================
   AI WALA PIPELINE — automatic cartoon story Shorts (free setup)
   Story -> pictures -> voice -> video -> YouTube upload, every day
 =====================================================================

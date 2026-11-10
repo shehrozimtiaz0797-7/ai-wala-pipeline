@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { env, requireEnv, fetchRetry, log } = require('./lib');
-const bible = require('../characters');
+const look = require('../style');
 
 // Cloudflare's safety filter blocks harmless prompts that contain certain words.
 // These replacements keep the meaning but avoid the false alarms.
@@ -11,7 +11,7 @@ const SAFE_WORDS = [
   [/\bwarm brown skin\b/gi, 'warm brown complexion'], [/\bskin\b/gi, 'complexion'],
   [/\bbod(y|ies)\b/gi, 'shape'], [/\bbedroom\b/gi, 'study room'], [/\bbed\b/gi, 'sofa'],
   [/\b(naked|nude|bare|undress\w*|shirtless|sexy|kiss\w*|lying down|lies down)\b/gi, ''],
-  [/\b(blood\w*|kill\w*|gun\w*|knife|dead|death)\b/gi, '']
+  [/\b(blood\w*|bleed\w*|gor(e|y)|kill\w*|murder\w*|gun\w*|knife|knives|weapon\w*|corpse\w*|dead|death|die[sd]?|injur\w*|wound\w*|bod(y|ies))\b/gi, '']
 ];
 function soften(text) {
   return SAFE_WORDS.reduce((t, [re, rep]) => t.replace(re, rep), String(text)).replace(/\s{2,}/g, ' ');
@@ -19,22 +19,43 @@ function soften(text) {
 
 function fullPrompt(scenePrompt) {
   const upper = scenePrompt.toUpperCase();
-  const looks = [];
-  if (upper.includes('ZAIN')) looks.push(bible.characters.Zain.look);
-  if (upper.includes('CHOTU')) looks.push(bible.characters.Chotu.look);
-  if (upper.includes('NANI')) looks.push(bible.characters.Nani.look);
-  const parts = [scenePrompt, ...looks, 'family-friendly, fully clothed characters', 'centered composition, characters fully in frame', bible.style];
+  const extra = [];
+  if (/\bYOU\b/.test(upper)) extra.push(look.you);
+  if (/\b(FIGURE|CREATURE|SHADOW|SILHOUETTE|STRANGER|MAN|WOMAN|PASSENGER|ATTENDANT)S?\b/.test(upper)) extra.push(look.creature);
+  const parts = [scenePrompt, ...extra, 'vertical-friendly centered composition, main subject in the middle', look.style];
   return soften(parts.join('. ')).slice(0, 2000);
 }
 
-// Second try when the filter still blocks: only the action of the scene, no character details.
+// Second try when the safety filter still blocks: a calmer, simpler version of the scene.
 function plainPrompt(scenePrompt) {
-  return soften(`${scenePrompt}. Wholesome family-friendly cartoon scene. ${bible.style}`).slice(0, 2000);
+  return soften(`${scenePrompt.split(/[.,;]/)[0]}. Quiet empty eerie place at night, nobody hurt. ${look.style}`).slice(0, 2000);
 }
 
+// Cloudflare accounts to use. CF_ACCOUNT_ID_2 / CF_API_TOKEN_2 (optional) is a backup account
+// that takes over when the first one's free daily limit is used up.
+function accounts() {
+  const list = [{ account: requireEnv('CF_ACCOUNT_ID', 'See START-HERE.txt.'), token: requireEnv('CF_API_TOKEN', 'See START-HERE.txt.') }];
+  if (env('CF_ACCOUNT_ID_2') && env('CF_API_TOKEN_2')) list.push({ account: env('CF_ACCOUNT_ID_2'), token: env('CF_API_TOKEN_2') });
+  return list;
+}
+let accountIndex = 0;
+
 async function generateImage(prompt, outFile, seed) {
-  const account = requireEnv('CF_ACCOUNT_ID', 'See START-HERE.txt, step 3.');
-  const token = requireEnv('CF_API_TOKEN', 'See START-HERE.txt, step 3.');
+  const all = accounts();
+  for (;;) {
+    try { return await generateWith(all[accountIndex], prompt, outFile); }
+    catch (err) {
+      if (/FREE limit/i.test(err.message) && accountIndex + 1 < all.length) {
+        accountIndex++;
+        log('Cloudflare: first account used up for today, switching to the backup account...');
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
+async function generateWith({ account, token }, prompt, outFile) {
   const model = env('CF_IMAGE_MODEL', '@cf/black-forest-labs/flux-1-schnell');
   const url = `https://api.cloudflare.com/client/v4/accounts/${account}/ai/run/${model}`;
   const res = await fetchRetry(url, {
@@ -49,36 +70,43 @@ async function generateImage(prompt, outFile, seed) {
   return outFile;
 }
 
+// Fewer unique pictures per video (each one is used for 1-2 scenes with a different camera move),
+// so 4 videos a day stay inside Cloudflare's free daily limit.
 async function makeSceneImages(story, workDir) {
+  const n = story.scenes.length;
+  const unique = Math.max(1, Math.min(n, Number(env('IMAGES_PER_VIDEO', '7'))));
+  const groupOf = i => Math.min(unique - 1, Math.floor(i * unique / n));
   const files = story.scenes.map((_, i) => path.join(workDir, `scene${i + 1}.jpg`));
-  const ok = [];
+  const pics = [];
   let lastError = null;
-  const baseSeed = Math.floor(Math.random() * 1e6);
-  for (const [i, scene] of story.scenes.entries()) {
+  for (let g = 0; g < unique; g++) {
+    const members = story.scenes.map((_, i) => i).filter(i => groupOf(i) === g);
+    const first = members[0];
+    const out = path.join(workDir, `pic${g + 1}.jpg`);
     try {
-      log(`Image ${i + 1}/${story.scenes.length}...`);
+      log(`Image ${g + 1}/${unique} (scene${members.length > 1 ? 's' : ''} ${members.map(i => i + 1).join(', ')})...`);
       try {
-        await generateImage(fullPrompt(scene.image_prompt), files[i], baseSeed + i);
+        await generateImage(fullPrompt(story.scenes[first].image_prompt), out);
       } catch (err) {
         if (!/NSFW|8007/i.test(err.message)) throw err;
-        log(`Image ${i + 1}: safety filter false alarm, retrying with a simpler prompt...`);
-        await generateImage(plainPrompt(scene.image_prompt), files[i], baseSeed + i);
+        log(`Image ${g + 1}: safety filter false alarm, retrying with a simpler prompt...`);
+        await generateImage(plainPrompt(story.scenes[first].image_prompt), out);
       }
-      ok[i] = true;
+      pics[g] = out;
     } catch (err) {
       lastError = err;
-      log(`Image ${i + 1} failed: ${err.message}`);
+      log(`Image ${g + 1} failed: ${err.message}`);
+      if (/FREE limit/i.test(err.message)) break; // no point trying the rest today
     }
   }
-  const good = ok.map((v, i) => (v ? i : -1)).filter(i => i >= 0);
+  const good = pics.map((p, g) => (p ? g : -1)).filter(g => g >= 0);
   if (!good.length) throw lastError || new Error('No images could be generated');
-  // A failed scene reuses the nearest good picture so the video can still be made.
   files.forEach((f, i) => {
-    if (ok[i]) return;
-    const nearest = good.reduce((a, b) => (Math.abs(b - i) < Math.abs(a - i) ? b : a));
-    fs.copyFileSync(files[nearest], f);
+    const g = groupOf(i);
+    const use = pics[g] ? g : good.reduce((a, b) => (Math.abs(b - g) < Math.abs(a - g) ? b : a));
+    fs.copyFileSync(pics[use], f);
   });
-  if (good.length < files.length) log(`${files.length - good.length} scene(s) reused a nearby picture.`);
+  if (good.length < unique) log(`${unique - good.length} picture(s) failed; those scenes reuse a nearby picture.`);
   return files;
 }
 

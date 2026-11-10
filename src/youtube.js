@@ -115,7 +115,7 @@ async function upload(videoFile, story, usedSlots = [], thumbnail = null) {
   const token = await accessToken();
   const privacy = env('PRIVACY', 'private');
   const publishAt = publishAtIso(usedSlots, f.publishHours());
-  const tags = [...new Set([...(story.tags || []), 'AI Wala', ...(f.kind === 'short' ? ['Shorts'] : ['Urdu Story', 'Cartoon'])])].slice(0, 15);
+  const tags = [...new Set([...(story.tags || []), 'AI Wala', 'Shorts', 'Urdu Horror', 'Horror Story', 'POV'])].slice(0, 15);
   const meta = {
     snippet: {
       title: story.title.slice(0, 100),

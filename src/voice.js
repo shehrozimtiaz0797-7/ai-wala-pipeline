@@ -3,8 +3,10 @@
 // The whole story is spoken in ONE request, then split into scenes at the natural pauses,
 // so one video costs only one voice request.
 const fs = require('fs');
+const { execFile } = require('child_process');
 const path = require('path');
-const { env, requireEnv, fetchRetry, runFFmpeg, runFFmpegCapture, sleep, log } = require('./lib');
+const { ttsStyle } = require('./horror-audio');
+const { ROOT, env, requireEnv, fetchRetry, runFFmpeg, runFFmpegCapture, sleep, log } = require('./lib');
 
 function wavFromPcm(pcm, sampleRate) {
   const header = Buffer.alloc(44);
@@ -15,17 +17,26 @@ function wavFromPcm(pcm, sampleRate) {
   return Buffer.concat([header, pcm]);
 }
 
-async function speak(text, outFile) {
+// GEMINI_TTS_VOICE can be one voice or a list ("Gacrux,Sulafat"): videos take turns.
+function pickVoice() {
+  const list = env('GEMINI_TTS_VOICE', 'Gacrux,Sulafat').split(/[,\s]+/).filter(Boolean);
+  if (list.length === 1) return list[0];
+  let n = 0;
+  try { n = JSON.parse(fs.readFileSync(path.join(ROOT, 'history.json'), 'utf8')).length; } catch (_) {}
+  return list[n % list.length];
+}
+
+async function speak(text, outFile, voiceOverride) {
   const key = requireEnv('GEMINI_API_KEY');
   const model = env('GEMINI_TTS_MODEL', 'gemini-3.8-flash-tts');
-  const voiceName = env('GEMINI_TTS_VOICE', 'Kore');
-  const style = env('TTS_STYLE', '');
+  const voiceName = voiceOverride || pickVoice();
+  const style = ttsStyle();
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
   const res = await fetchRetry(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: style ? `${style}\n\n${text}` : text }] }],
+      contents: [{ parts: [{ text: style ? `${style}\n${text}` : text }] }],
       generationConfig: {
         responseModalities: ['AUDIO'],
         speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName } } }
@@ -34,6 +45,7 @@ async function speak(text, outFile) {
   }, 'Gemini voice');
   const data = await res.json();
   const part = data.candidates?.[0]?.content?.parts?.find(p => p.inlineData?.data);
+  log(`Voice: ${voiceName}`);
   if (!part) throw new Error('Gemini voice returned no audio: ' + JSON.stringify(data).slice(0, 300));
   const rate = Number((part.inlineData.mimeType || '').match(/rate=(\d+)/)?.[1] || 24000);
   const pcm = Buffer.from(part.inlineData.data, 'base64');
@@ -42,8 +54,8 @@ async function speak(text, outFile) {
 }
 
 // Finds pauses in the narration: returns [{start, end, mid}] in seconds.
-async function findPauses(file, workDir) {
-  const out = await runFFmpegCapture(['-i', path.basename(file), '-af', 'silencedetect=noise=-38dB:d=0.18', '-f', 'null', '-'], workDir);
+async function findPauses(file, workDir, minPause = 0.18) {
+  const out = await runFFmpegCapture(['-i', path.basename(file), '-af', `silencedetect=noise=-38dB:d=${minPause}`, '-f', 'null', '-'], workDir);
   const pauses = [];
   let start = null;
   for (const line of out.split(/\r?\n/)) {
@@ -53,6 +65,68 @@ async function findPauses(file, workDir) {
     if (e && start !== null) { const end = Number(e[1]); pauses.push({ start, end, mid: (start + end) / 2, len: end - start }); start = null; }
   }
   return pauses;
+}
+
+// Where the voice is actually speaking inside one scene clip: [{start, end}] in seconds.
+// Used to time the captions exactly with the voice (skipping the quiet gaps).
+async function speechParts(file, dur, workDir) {
+  let pauses = [];
+  try { pauses = await findPauses(file, workDir, 0.12); } catch (_) { /* fall back below */ }
+  const parts = [];
+  let t = 0;
+  for (const p of pauses) {
+    const end = Math.min(p.start, dur);
+    if (end - t > 0.08) parts.push({ start: t, end });
+    t = Math.max(t, p.end);
+  }
+  if (dur - t > 0.08) parts.push({ start: t, end: dur });
+  return parts.length ? parts : [{ start: 0.05, end: dur }];
+}
+
+// Word times with speech recognition (align.py + faster-whisper). Returns per-line word lists, or null.
+async function alignWords(full, lines, workDir) {
+  if (env('ALIGN', 'yes').toLowerCase() === 'no') return null;
+  const py = env('PYTHON', process.platform === 'win32' ? 'python' : 'python3');
+  const linesFile = path.join(workDir, 'lines.json'), outFile = path.join(workDir, 'words.json');
+  fs.writeFileSync(linesFile, JSON.stringify(lines));
+  try {
+    const wav16 = path.join(workDir, 'voice16k.wav');
+    await runFFmpeg(['-y', '-i', path.basename(full), '-ac', '1', '-ar', '16000', '-c:a', 'pcm_s16le', 'voice16k.wav'], workDir);
+    full = wav16;
+    const res = await new Promise(resolve => {
+      execFile(py, [path.join(ROOT, 'align.py'), full, linesFile, outFile], { timeout: 600000, windowsHide: true },
+        (err, stdout, stderr) => resolve({ err, text: (stdout + stderr).trim() }));
+    });
+    if (res.err || !fs.existsSync(outFile)) {
+      log(`Word timing not available (${(res.text.split(/\r?\n/).pop() || res.err?.message || '').slice(0, 160)}), using pause detection.`);
+      return null;
+    }
+    const data = JSON.parse(fs.readFileSync(outFile, 'utf8'));
+    log(`Word timing (${data.engine}): ${data.matched}/${data.total} words matched to the voice.`);
+    return data.lines;
+  } catch (err) {
+    log(`Word timing failed (${err.message}), using pause detection.`);
+    return null;
+  }
+}
+
+// The voice reads the Urdu-script line, but the captions show the Roman Urdu line.
+// Word times come from the Urdu words; this gives every Roman caption word a time.
+// Same word count: one to one. Different count: spread by position.
+function mapToSubtitle(timed, subtitle) {
+  const sw = String(subtitle || '').split(/\s+/).filter(Boolean);
+  if (!timed || !timed.length || !sw.length) return timed;
+  if (sw.length === timed.length) return sw.map((w, k) => ({ w, start: timed[k].start, end: timed[k].end }));
+  const n = timed.length, m = sw.length;
+  const at = pos => {
+    const i = Math.max(0, Math.min(n - 1, Math.floor(pos)));
+    const t = timed[i];
+    return t.start + (t.end - t.start) * Math.min(1, pos - i);
+  };
+  return sw.map((w, k) => {
+    const a = at(k * n / m), b = at((k + 1) * n / m);
+    return { w, start: a, end: Math.max(b, a + 0.08) };
+  });
 }
 
 // Picks where each scene's line ends: the pause closest to where it "should" be by text length.
@@ -101,14 +175,36 @@ async function makeVoiceOvers(story, workDir) {
       : `Voice part ${p + 1}/${parts}: recording ${group.length} lines...`);
     if (p > 0) await sleep(Number(env('TTS_DELAY_MS', '6000')));
     const total = await speak(group.join('\n\n'), full);
-    const pauses = await findPauses(full, workDir);
-    const cuts = chooseCuts(group, total, pauses);
+    // Best: real word times from speech recognition. Fallback: cut at pauses (less exact).
+    let words = await alignWords(full, group, workDir);
+    // timed Urdu words -> Roman Urdu caption words (same line index in the story)
+    const subLines = story.scenes.map(sc => sc.subtitle);
+    if (words && useUrdu) words = words.map((l, i) => mapToSubtitle(l, subLines[p * per + i]));
+    let cuts;
+    if (words) {
+      // start at the first real story word (skips anything the voice said before the story)
+      const first = words.find(l => l.length), last = [...words].reverse().find(l => l.length);
+      const begin = first ? Math.max(0, first[0].start - 0.25) : 0;
+      if (begin > 1) log(`Skipping ${begin.toFixed(1)}s of extra speech before the story.`);
+      cuts = [begin];
+      for (let i = 1; i < group.length; i++) {
+        const prevEnd = words[i - 1].length ? words[i - 1][words[i - 1].length - 1].end : cuts[i - 1];
+        const nextStart = words[i].length ? words[i][0].start : prevEnd;
+        cuts.push(Math.max(cuts[i - 1] + 0.2, Math.min(total, (prevEnd + Math.max(prevEnd, nextStart)) / 2)));
+      }
+      cuts.push(last ? Math.min(total, last[last.length - 1].end + 0.6) : total);
+    } else {
+      cuts = chooseCuts(group, total, await findPauses(full, workDir));
+    }
     for (let i = 0; i < group.length; i++) {
       const n = out.length + 1;
       const file = path.join(workDir, `voice${n}.wav`);
       const start = cuts[i], end = cuts[i + 1];
       await runFFmpeg(['-y', '-i', path.basename(full), '-ss', start.toFixed(3), '-to', end.toFixed(3), '-c:a', 'pcm_s16le', path.basename(file)], workDir);
-      out.push({ file, duration: end - start });
+      const item = { file, duration: end - start };
+      if (words) item.words = words[i].map(w => ({ w: w.w, start: Math.max(0, w.start - start), end: Math.max(0, w.end - start) }));
+      else item.speech = await speechParts(file, end - start, workDir);
+      out.push(item);
     }
     grand += total;
   }
@@ -116,4 +212,4 @@ async function makeVoiceOvers(story, workDir) {
   return out;
 }
 
-module.exports = { makeVoiceOvers, wavFromPcm, chooseCuts };
+module.exports = { makeVoiceOvers, wavFromPcm, chooseCuts, speak, speechParts, mapToSubtitle };
