@@ -37,8 +37,8 @@ jobs:
       PRIVACY: public
       GEMINI_TEXT_MODEL: gemini-3.8-flash
       GEMINI_TTS_MODEL: gemini-3.8-flash-tts
-      # Voices take turns, one per video (male Gacrux, female Sulafat)
-      GEMINI_TTS_VOICE: Gacrux,Sulafat
+      # The voice AI Wala has always used
+      GEMINI_TTS_VOICE: Kore
       # urdu = the voice reads Urdu script, captions show Roman Urdu
       VOICE_SCRIPT: urdu
       BRAND_TEXT: AI WALA
@@ -46,7 +46,8 @@ jobs:
       VOICE_PITCH: "0.94"
       VOICE_REVERB: "0.22"
       PYTHON: python
-      # speech recogniser that finds every word's time (multilingual, so it can listen to Urdu)
+      # speech recogniser that finds every word's time (multilingual, so it can listen to Urdu).
+      # Its result is only used when it agrees with the pauses in the voice; otherwise the pauses are used.
       WHISPER_MODEL: small
       WHISPER_LANGUAGE: ur
       # ----- Secrets (Settings -> Secrets and variables -> Actions) -----

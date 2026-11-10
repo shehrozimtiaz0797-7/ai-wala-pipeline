@@ -19,7 +19,7 @@ function wavFromPcm(pcm, sampleRate) {
 
 // GEMINI_TTS_VOICE can be one voice or a list ("Gacrux,Sulafat"): videos take turns.
 function pickVoice() {
-  const list = env('GEMINI_TTS_VOICE', 'Gacrux,Sulafat').split(/[,\s]+/).filter(Boolean);
+  const list = env('GEMINI_TTS_VOICE', 'Kore').split(/[,\s]+/).filter(Boolean);
   if (list.length === 1) return list[0];
   let n = 0;
   try { n = JSON.parse(fs.readFileSync(path.join(ROOT, 'history.json'), 'utf8')).length; } catch (_) {}
@@ -157,6 +157,45 @@ function chooseCuts(lines, total, pauses) {
   return cuts;
 }
 
+// Speech recognition on Urdu can go wrong. Only trust it when it agrees with the pauses
+// in the recording, which are measured separately. Otherwise the pause timing is used.
+function checkWords(words, cuts, total) {
+  if (!words || words.length !== cuts.length - 1) return { ok: false, why: 'line count differs' };
+  let tooLong = 0, all = 0;
+  for (let i = 0; i < words.length; i++) {
+    const l = words[i];
+    if (!l.length) return { ok: false, why: `line ${i + 1} has no words` };
+    const first = l[0].start, last = l[l.length - 1].end;
+    if (first < cuts[i] - 0.7 || first > cuts[i] + 2.2) {
+      return { ok: false, why: `line ${i + 1} starts at ${first.toFixed(1)}s but the pauses say ${cuts[i].toFixed(1)}s` };
+    }
+    if (last > cuts[i + 1] + 0.8) {
+      return { ok: false, why: `line ${i + 1} ends at ${last.toFixed(1)}s, after the next pause (${cuts[i + 1].toFixed(1)}s)` };
+    }
+    for (const w of l) { all++; if (w.end - w.start > 1.6) tooLong++; }
+    // inside the line: no long hole between words, and every word close to where its length says it should be
+    for (let k = 1; k < l.length; k++) {
+      if (l[k].start - l[k - 1].end > 1.8) {
+        return { ok: false, why: `line ${i + 1} has a ${(l[k].start - l[k - 1].end).toFixed(1)}s hole between two words` };
+      }
+    }
+    if (l.length >= 4) {
+      const wt = l.map(x => Math.max(1, String(x.w).replace(/[^\p{L}\p{N}]/gu, '').length));
+      const sum = wt.reduce((a, b) => a + b, 0), span = last - first;
+      let acc = 0;
+      for (let k = 0; k < l.length; k++) {
+        const expected = first + span * acc / sum;
+        if (Math.abs(l[k].start - expected) > Math.max(1.0, span * 0.25)) {
+          return { ok: false, why: `line ${i + 1}: a word is ${Math.abs(l[k].start - expected).toFixed(1)}s away from where it should be` };
+        }
+        acc += wt[k];
+      }
+    }
+  }
+  if (all && tooLong / all > 0.25) return { ok: false, why: 'too many very long words' };
+  return { ok: true };
+}
+
 async function makeVoiceOvers(story, workDir) {
   const useUrdu = env('VOICE_SCRIPT', 'urdu').toLowerCase() !== 'roman';
   const lines = story.scenes.map(s => (useUrdu ? s.voice : s.subtitle).trim());
@@ -175,11 +214,14 @@ async function makeVoiceOvers(story, workDir) {
       : `Voice part ${p + 1}/${parts}: recording ${group.length} lines...`);
     if (p > 0) await sleep(Number(env('TTS_DELAY_MS', '6000')));
     const total = await speak(group.join('\n\n'), full);
-    // Best: real word times from speech recognition. Fallback: cut at pauses (less exact).
-    let words = await alignWords(full, group, workDir);
-    // timed Urdu words -> Roman Urdu caption words (same line index in the story)
-    const subLines = story.scenes.map(sc => sc.subtitle);
-    if (words && useUrdu) words = words.map((l, i) => mapToSubtitle(l, subLines[p * per + i]));
+    // Line boundaries from the pauses in the recording (always measured).
+    const pauseCuts = chooseCuts(group, total, await findPauses(full, workDir));
+    // Better when believable: real word times from speech recognition.
+    let words = env('ALIGN', 'on').toLowerCase() === 'off' ? null : await alignWords(full, group, workDir);
+    if (words) {
+      const chk = checkWords(words, pauseCuts, total);
+      if (!chk.ok) { log(`Word timing rejected (${chk.why}). Using the pauses in the voice instead.`); words = null; }
+    }
     let cuts;
     if (words) {
       // start at the first real story word (skips anything the voice said before the story)
@@ -193,8 +235,13 @@ async function makeVoiceOvers(story, workDir) {
         cuts.push(Math.max(cuts[i - 1] + 0.2, Math.min(total, (prevEnd + Math.max(prevEnd, nextStart)) / 2)));
       }
       cuts.push(last ? Math.min(total, last[last.length - 1].end + 0.6) : total);
+      // timed Urdu words -> Roman Urdu caption words (same line index in the story)
+      if (useUrdu) {
+        const subLines = story.scenes.map(sc => sc.subtitle);
+        words = words.map((l, i) => mapToSubtitle(l, subLines[p * per + i]));
+      }
     } else {
-      cuts = chooseCuts(group, total, await findPauses(full, workDir));
+      cuts = pauseCuts;
     }
     for (let i = 0; i < group.length; i++) {
       const n = out.length + 1;
@@ -212,4 +259,4 @@ async function makeVoiceOvers(story, workDir) {
   return out;
 }
 
-module.exports = { makeVoiceOvers, wavFromPcm, chooseCuts, speak, speechParts, mapToSubtitle };
+module.exports = { makeVoiceOvers, wavFromPcm, chooseCuts, speak, speechParts, mapToSubtitle, checkWords };

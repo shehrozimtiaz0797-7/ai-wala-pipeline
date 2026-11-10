@@ -3,10 +3,16 @@
 // the voice gets a little deeper with a cold room echo, and a low dark drone plays underneath.
 const { env } = require('./lib');
 
-// Keep this SHORT and in Google's "Say ...:" form. A long instruction gets read out loud by the voice.
-const DEFAULT_STYLE = 'Say slowly, in a low, eerie whisper:';
+// AI Wala: NO spoken instruction by default. The voice used to read the instruction out loud at the
+// start of the video, which pushed every caption out of sync. The horror feel comes from the
+// sound effects below (deeper voice, cold echo, dark drone) and from the story itself.
+// To try a style anyway, set HORROR_STYLE to a short "Say ...:" sentence in the workflow.
+const DEFAULT_STYLE = '';
 
-function ttsStyle() { return env('HORROR_STYLE', DEFAULT_STYLE); }
+function ttsStyle() {
+  const v = env('HORROR_STYLE', DEFAULT_STYLE);
+  return /^(none|off)$/i.test(v) ? '' : v;
+}
 
 // Filter for the voice: [in] -> [out]
 function voiceFx(input, output) {
