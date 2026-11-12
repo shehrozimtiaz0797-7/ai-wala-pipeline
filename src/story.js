@@ -8,6 +8,7 @@ const look = require('../style');
 const { format } = require('./formats');
 
 const HISTORY = path.join(ROOT, 'history.json');
+let lastSetting = '';
 
 function readHistory() {
   try { return JSON.parse(fs.readFileSync(HISTORY, 'utf8')); } catch (_) { return []; }
@@ -20,8 +21,18 @@ function addHistory(entry) {
 
 function buildPrompt(topic, sceneCount, fmt) {
   const past = readHistory().slice(-40).map(h => `- ${h.title}`).join('\n') || '- (none yet)';
-  const pool = (look.settingsHot && Math.random() < 0.75) ? look.settingsHot : look.settings;
-  const setting = topic || pool[Math.floor(Math.random() * pool.length)];
+  // Never reuse a setting from the last 40 stories, and sometimes let the writer invent a new one.
+  const usedSettings = readHistory().slice(-40).map(h => h.setting).filter(Boolean);
+  const fresh = list => (list || []).filter(x => !usedSettings.includes(x));
+  const first = (look.settingsHot && Math.random() < 0.75) ? look.settingsHot : look.settings;
+  let options = fresh(first);
+  if (!options.length) options = fresh([...(look.settingsHot || []), ...look.settings]);
+  const invent = !topic && (!options.length || Math.random() < 0.3);
+  const setting = topic || (invent ? '' : options[Math.floor(Math.random() * options.length)]);
+  lastSetting = topic ? topic : (invent ? 'invented' : setting);
+  const settingLine = invent
+    ? 'Invent a fresh, original setting yourself: an ordinary place real people know (not a famous landmark). It must be clearly different from every earlier story listed below.'
+    : setting;
   const short = sceneCount <= 10;
 
   return `You write scripts for "AI Wala", a Pakistani YouTube Shorts channel of creepy POV "rules" horror stories told in Urdu.
@@ -29,7 +40,7 @@ The viewer is the main character: always speak to the viewer as "aap" (e.g. "Aap
 Tone: calm, quiet, slow-burn dread, like someone whispering a warning. Creepy, not gory.
 Language: simple everyday spoken Urdu, the way people really talk in Pakistan (common English words like "rule", "lift", "phone" are fine).
 
-Setting: ${setting}
+Setting: ${settingLine}
 
 Write exactly ${sceneCount} scenes for a vertical Short of about 55-70 seconds. Structure:
 - Scene 1: the HOOK. Under 10 words. It must make the viewer stop scrolling: a threat, a question or something wrong, with no warm-up (e.g. "Flight attendant ne parchi thamai. Kholna mat.").
@@ -47,6 +58,8 @@ Line rules:
 - "image_prompt": English, 25-50 words, one clear dark moment for the picture. When the viewer is in the picture write "YOU" in capitals. Never describe a face; strange beings are faceless silhouettes or shadows. No blood, no gore, no weapons, no injuries, no dead bodies, no children in danger. No text or signs in the picture.
 - The number of rules named in the title must be exactly the number of rules in the story.
 - Fiction only. No religion or religious figures (no jinn, prayers or holy places), no real places, brands, people or real tragedies.
+
+Every story must be clearly different from the earlier ones below: a different place AND a different kind of danger. Do not reuse a place, object or twist from them (for example no second 'hotel clerk with a key or card', no second scarecrow story, no second elevator).
 
 Do not repeat these earlier stories:
 ${past}
@@ -126,6 +139,7 @@ async function writeStory(topic, kind = 'short') {
           return { subtitle: sub, voice, label: String(s.label || '').trim().slice(0, 14), image_prompt: String(s.image_prompt).trim() };
         });
         story.tags = Array.isArray(story.tags) ? story.tags.map(String).slice(0, 15) : [];
+        story.setting = lastSetting;
         story.title = String(story.title).slice(0, 95);
         story.kind = fmt.kind;
         log(`Story ready: "${story.title}" (${story.scenes.length} scenes, ${model})`);
