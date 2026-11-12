@@ -17,6 +17,26 @@ module.exports = {
 
   // Where the stories happen. The story writer picks one when no topic is given.
   // (No religion, no real places or brands.)
+
+  // Outdoor and rural places got the most views for the sister channel, so these are picked more often.
+  settingsHot: [
+    'a boys hostel room at night where the previous student left rules on the wall',
+    'a college building at night where the chowkidar leaves rules about the third floor',
+    'a hostel corridor after midnight where the warden leaves rules before locking up',
+    'a lake rest house at night where the caretaker leaves rules about the water',
+    'a village haveli at night where the old caretaker leaves rules about the courtyard',
+    'a sugarcane field at night where the farmer gives you rules before he leaves',
+    'a long empty mountain road where the dhaba owner leaves rules for the night',
+    'an old railway station platform at 2 AM where the station master gives you a list',
+    'an abandoned fairground (mela) that you must lock up alone',
+    'a canal-side rest house where the watchman leaves rules about the water',
+    'an orchard at night where the keeper tells you never to count the trees',
+    'an attic in your grandmother\'s old house with rules written inside the door',
+    'an empty cricket ground at night where the groundsman leaves rules about the pavilion',
+    'a village well where the elders leave you rules about the rope',
+    'a forest rest house where the guard leaves rules about the path behind it',
+    'a night bus on a motorway where the conductor tells you never to look at the last seat'
+  ],
   settings: [
     'your first night shift alone at a petrol pump on a long empty motorway',
     'an old haveli where the caretaker gives you a list of rules for the upper floor',

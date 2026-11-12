@@ -5,8 +5,8 @@ const { env } = require('./lib');
 const SHORT = {
   kind: 'short',
   label: 'Short',
-  scenes: () => Number(env('SHORT_SCENES', '12')),
-  wordsPerLine: '8 to 14',
+  scenes: () => Number(env('SHORT_SCENES', '10')),
+  wordsPerLine: '8 to 12',
   width: 1080, height: 1920,
   pic: 1080, picX: 0, picY: 420,
   gap: 0.35,

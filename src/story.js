@@ -20,7 +20,9 @@ function addHistory(entry) {
 
 function buildPrompt(topic, sceneCount, fmt) {
   const past = readHistory().slice(-40).map(h => `- ${h.title}`).join('\n') || '- (none yet)';
-  const setting = topic || look.settings[Math.floor(Math.random() * look.settings.length)];
+  const pool = (look.settingsHot && Math.random() < 0.75) ? look.settingsHot : look.settings;
+  const setting = topic || pool[Math.floor(Math.random() * pool.length)];
+  const short = sceneCount <= 10;
 
   return `You write scripts for "AI Wala", a Pakistani YouTube Shorts channel of creepy POV "rules" horror stories told in Urdu.
 The viewer is the main character: always speak to the viewer as "aap" (e.g. "Aap raat ke 3 baje...", "Aapke haath mein ek parchi hai.").
@@ -29,11 +31,11 @@ Language: simple everyday spoken Urdu, the way people really talk in Pakistan (c
 
 Setting: ${setting}
 
-Write exactly ${sceneCount} scenes for a vertical Short of about 60-80 seconds. Structure:
-- Scene 1: a hook that drops the viewer straight into the situation in one line (e.g. "Raat ke 3 baje hain, aur flight attendant ne abhi aapko ek parchi thamai hai.").
+Write exactly ${sceneCount} scenes for a vertical Short of about 55-70 seconds. Structure:
+- Scene 1: the HOOK. Under 10 words. It must make the viewer stop scrolling: a threat, a question or something wrong, with no warm-up (e.g. "Flight attendant ne parchi thamai. Kholna mat.").
 - Scene 2: where the rules come from (a note, a sign, a voice, a logbook).
-- Then 4 to 6 rules, one per scene, each with a short creepy detail. Each rule line starts with "Pehla rule:", "Doosra rule:", "Teesra rule:", "Chautha rule:", "Paanchwan rule:" (and so on).
-- Then 2 or 3 scenes where something goes wrong: a rule is tested, something breaks the pattern.
+- Then ${short ? '3 to 4' : '4 to 6'} rules, one per scene, each with a short creepy detail. Each rule line starts with "Pehla rule:", "Doosra rule:", "Teesra rule:", "Chautha rule:", "Paanchwan rule:" (and so on).
+- Then ${short ? '1 or 2' : '2 or 3'} scenes where something goes wrong: a rule is tested, something breaks the pattern.
 - Second-to-last scene: the final impossible moment.
 - Last scene: give the viewer a choice in this exact pattern: "Aap kya karenge? A, <option>, ya B, <option>? Comment mein A ya B likhein." Both options must sound risky.
 
@@ -43,6 +45,7 @@ Line rules:
 - "subtitle": the SAME line in Roman Urdu (Urdu written in English letters) with EXACTLY the same number of words, in the same order, as "voice" (one Roman word for each Urdu word, so the captions can follow the voice). Keep the punctuation attached to the word it follows. Write the letters A and B as "A" and "B".
 - "label": "RULE 1", "RULE 2"... on rule scenes; "A YA B?" on the last scene; empty string "" on all other scenes.
 - "image_prompt": English, 25-50 words, one clear dark moment for the picture. When the viewer is in the picture write "YOU" in capitals. Never describe a face; strange beings are faceless silhouettes or shadows. No blood, no gore, no weapons, no injuries, no dead bodies, no children in danger. No text or signs in the picture.
+- The number of rules named in the title must be exactly the number of rules in the story.
 - Fiction only. No religion or religious figures (no jinn, prayers or holy places), no real places, brands, people or real tragedies.
 
 Do not repeat these earlier stories:
@@ -50,7 +53,7 @@ ${past}
 
 Return ONLY valid JSON in this exact shape:
 {
-  "title": "curiosity title in Roman Urdu under 70 characters, starting with POV:, e.g. 'POV: Raat Ki Duty Ke 5 Rules. Teesra Kabhi Mat Todna'",
+  "title": "curiosity title in Roman Urdu under 70 characters, starting with POV:. Use the form 'POV: <Jagah> Ki Raat Ke 5 Rules. <Doosra/Teesra> Kabhi Mat <action>' (e.g. 'POV: Hostel Ki Raat Ke 5 Rules. Doosra Kabhi Mat Sunna', 'POV: Nani Ke Ghar Ke 5 Rules. Attic Kabhi Mat Kholna'). The forbidden action must be a real rule from your story",
   "description": "2 short sentences in Roman Urdu that tease the story without spoiling it, and say it is a fictional horror story",
   "tags": ["8 to 12 short tags, mix of English and Roman Urdu, e.g. 'urdu horror story'"],
   "scenes": [ { "voice": "...", "subtitle": "...", "label": "", "image_prompt": "..." } ]
