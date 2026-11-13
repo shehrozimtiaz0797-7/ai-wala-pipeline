@@ -59,7 +59,7 @@ function buildPrompt(topic, sceneCount, fmt) {
   const short = sceneCount <= 10;
   // not every video has 5 rules, so the titles and stories do not all look the same
   const pickN = list => list[Math.floor(Math.random() * list.length)];
-  const rules = sceneCount <= 8 ? 3 : (short ? pickN([3, 4, 4]) : pickN([4, 5, 5, 6]));
+  const rules = sceneCount <= 8 ? 3 : (short ? pickN([4, 5, 5]) : pickN([5, 6, 6]));
   const wrong = Math.max(1, sceneCount - 4 - rules);
 
   return `You write scripts for "AI Wala", a Pakistani YouTube Shorts channel of creepy POV "rules" horror stories told in Urdu.
@@ -95,7 +95,7 @@ ${past}
 
 Return ONLY valid JSON in this exact shape:
 {
-  "title": "curiosity title in Roman Urdu under 70 characters, starting with POV:. Use the form 'POV: <Jagah> Ki Raat Ke ${rules} Rules. <Doosra/Teesra> Kabhi Mat <action>' (e.g. 'POV: Hostel Ki Raat Ke ${rules} Rules. Doosra Kabhi Mat Sunna', 'POV: Nani Ke Ghar Ke ${rules} Rules. Attic Kabhi Mat Kholna'). The forbidden action must be a real rule from your story",
+  "title": "curiosity title in Roman Urdu under 70 characters. When the story is a night shift job use the form 'Night Shift: <Job> <2 emojis> | ${rules} Rules To Survive' (e.g. 'Night Shift: Railway Crossing Gateman 🚂😱 | ${rules} Rules To Survive', 'Night Shift: Dam Ka Guard 🌊😱 | ${rules} Rules'). Otherwise use 'POV: <Jagah> Ki Raat Ke ${rules} Rules. <Doosra/Teesra> Kabhi Mat <action> <1 emoji>'. Any forbidden action must be a real rule from your story",
   "description": "2 short sentences in Roman Urdu that tease the story without spoiling it, and say it is a fictional horror story",
   "tags": ["8 to 12 short tags, mix of English and Roman Urdu, e.g. 'urdu horror story'"],
   "scenes": [ { "voice": "...", "subtitle": "...", "label": "", "image_prompt": "..." } ]
