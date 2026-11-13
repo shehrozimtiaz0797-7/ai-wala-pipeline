@@ -31,7 +31,7 @@ jobs:
       FFMPEG_PATH: ffmpeg
       # ----- Settings (edit here) -----
       SHORTS_PER_RUN: "1"
-      SHORT_SCENES: "8"
+      SHORT_SCENES: "10"
       # unique pictures per video (each used for 1-2 scenes) - keeps many videos/day inside the free image limit
       IMAGES_PER_VIDEO: "7"
       PRIVACY: public
