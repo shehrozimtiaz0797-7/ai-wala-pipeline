@@ -34,6 +34,10 @@ function buildPrompt(topic, sceneCount, fmt) {
     ? 'Invent a fresh, original setting yourself: an ordinary place real people know (not a famous landmark). It must be clearly different from every earlier story listed below.'
     : setting;
   const short = sceneCount <= 10;
+  // not every video has 5 rules, so the titles and stories do not all look the same
+  const pickN = list => list[Math.floor(Math.random() * list.length)];
+  const rules = sceneCount <= 8 ? 3 : (short ? pickN([3, 4, 4]) : pickN([4, 5, 5, 6]));
+  const wrong = Math.max(1, sceneCount - 4 - rules);
 
   return `You write scripts for "AI Wala", a Pakistani YouTube Shorts channel of creepy POV "rules" horror stories told in Urdu.
 The viewer is the main character: always speak to the viewer as "aap" (e.g. "Aap raat ke 3 baje...", "Aapke haath mein ek parchi hai.").
@@ -42,16 +46,18 @@ Language: simple everyday spoken Urdu, the way people really talk in Pakistan (c
 
 Setting: ${settingLine}
 
-Write exactly ${sceneCount} scenes for a vertical Short of about 55-70 seconds. Structure:
-- Scene 1: the HOOK. Under 10 words. It must make the viewer stop scrolling: a threat, a question or something wrong, with no warm-up (e.g. "Flight attendant ne parchi thamai. Kholna mat.").
-- Scene 2: where the rules come from (a note, a sign, a voice, a logbook).
-- Then ${short ? '3 to 4' : '4 to 6'} rules, one per scene, each with a short creepy detail. Each rule line starts with "Pehla rule:", "Doosra rule:", "Teesra rule:", "Chautha rule:", "Paanchwan rule:" (and so on).
-- Then ${short ? '1 or 2' : '2 or 3'} scenes where something goes wrong: a rule is tested, something breaks the pattern.
+Write exactly ${sceneCount} scenes for a vertical Short of about ${sceneCount <= 8 ? '35-45' : '55-70'} seconds. Structure:
+- Scene 1: the COLD OPEN. 4 to 7 words. Start in the middle of the scariest moment of the story, when a rule is already toot chuka hai, with no warm-up and no "POV" (e.g. "Darwaze par dastak ho rahi hai.", "Aapne doosra rule tod diya.", "Peeche mat dekhna. Woh khara hai."). The viewer must feel danger in the first second.
+- Scene 2: 6 to 9 words. Jump back: where the rules came from (a note, a sign, a voice, a logbook), e.g. "Ek ghanta pehle warden ne parchi di thi."
+- Then ${rules} rules, one per scene, each with a short creepy detail. Each rule line starts with "Pehla rule:", "Doosra rule:", "Teesra rule:", "Chautha rule:", "Paanchwan rule:" (and so on).
+- Then ${wrong} scene${wrong > 1 ? 's' : ''} where something goes wrong: a rule is tested, something breaks the pattern.
 - Second-to-last scene: the final impossible moment.
 - Last scene: give the viewer a choice in this exact pattern: "Aap kya karenge? A, <option>, ya B, <option>? Comment mein A ya B likhein." Both options must sound risky.
 
 Line rules:
-- Each scene is ONE spoken line of ${fmt.wordsPerLine} words. Short sentences, easy to read as big captions.
+- Each scene is ONE spoken line of ${fmt.wordsPerLine} words (scenes 1 and 2 are shorter, as said above). Short sentences, easy to read as big captions.
+- Scene 1 "image_prompt" must be the most striking picture of the whole story: the threat itself, close and clear (a faceless silhouette right behind YOU, a hand-shaped shadow on the door, the thing standing where it should not be). Never an empty room or a calm establishing shot.
+- The "something goes wrong" scenes must lead back to the moment shown in scene 1 and then go past it.
 - "voice": the line written in Urdu script (اردو), exactly as it should be read aloud. Write the letters A and B as "اے" and "بی". Rule words as "پہلا رول:", "دوسرا رول:", "تیسرا رول:", "چوتھا رول:", "پانچواں رول:". Use ۔ ، ؟ for punctuation.
 - "subtitle": the SAME line in Roman Urdu (Urdu written in English letters) with EXACTLY the same number of words, in the same order, as "voice" (one Roman word for each Urdu word, so the captions can follow the voice). Keep the punctuation attached to the word it follows. Write the letters A and B as "A" and "B".
 - "label": "RULE 1", "RULE 2"... on rule scenes; "A YA B?" on the last scene; empty string "" on all other scenes.
@@ -66,7 +72,7 @@ ${past}
 
 Return ONLY valid JSON in this exact shape:
 {
-  "title": "curiosity title in Roman Urdu under 70 characters, starting with POV:. Use the form 'POV: <Jagah> Ki Raat Ke 5 Rules. <Doosra/Teesra> Kabhi Mat <action>' (e.g. 'POV: Hostel Ki Raat Ke 5 Rules. Doosra Kabhi Mat Sunna', 'POV: Nani Ke Ghar Ke 5 Rules. Attic Kabhi Mat Kholna'). The forbidden action must be a real rule from your story",
+  "title": "curiosity title in Roman Urdu under 70 characters, starting with POV:. Use the form 'POV: <Jagah> Ki Raat Ke ${rules} Rules. <Doosra/Teesra> Kabhi Mat <action>' (e.g. 'POV: Hostel Ki Raat Ke ${rules} Rules. Doosra Kabhi Mat Sunna', 'POV: Nani Ke Ghar Ke ${rules} Rules. Attic Kabhi Mat Kholna'). The forbidden action must be a real rule from your story",
   "description": "2 short sentences in Roman Urdu that tease the story without spoiling it, and say it is a fictional horror story",
   "tags": ["8 to 12 short tags, mix of English and Roman Urdu, e.g. 'urdu horror story'"],
   "scenes": [ { "voice": "...", "subtitle": "...", "label": "", "image_prompt": "..." } ]
