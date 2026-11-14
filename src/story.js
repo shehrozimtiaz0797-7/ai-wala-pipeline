@@ -47,7 +47,7 @@ function buildPrompt(topic, sceneCount, fmt) {
   const usedSettings = readHistory().slice(-40).map(h => h.setting).filter(Boolean);
   const usedThemes = recentThemes(15);
   const fresh = list => (list || []).filter(x => !usedSettings.includes(x) && !themesOf(x).some(th => usedThemes.has(th)));
-  const first = (look.settingsHot && Math.random() < 0.75) ? look.settingsHot : look.settings;
+  const first = (look.settingsHot && Math.random() < 0.35) ? look.settingsHot : look.settings;
   let options = fresh(first);
   if (!options.length) options = fresh([...(look.settingsHot || []), ...look.settings]);
   const invent = !topic && (!options.length || Math.random() < 0.3);
@@ -95,7 +95,7 @@ ${past}
 
 Return ONLY valid JSON in this exact shape:
 {
-  "title": "curiosity title in Roman Urdu under 70 characters. When the story is a night shift job use the form 'Night Shift: <Job> <2 emojis> | ${rules} Rules To Survive' (e.g. 'Night Shift: Railway Crossing Gateman 🚂😱 | ${rules} Rules To Survive', 'Night Shift: Dam Ka Guard 🌊😱 | ${rules} Rules'). Otherwise use 'POV: <Jagah> Ki Raat Ke ${rules} Rules. <Doosra/Teesra> Kabhi Mat <action> <1 emoji>'. Any forbidden action must be a real rule from your story",
+  "title": "curiosity title in Roman Urdu under 70 characters, ALWAYS in the form 'POV: <Jagah> Ki Raat Ke ${rules} Rules. <Doosra/Teesra/Chautha> Kabhi Mat <action> <1 emoji>' (e.g. 'POV: Petrol Pump Ki Raat Ke ${rules} Rules. Chautha Mat Todna 😱', 'POV: Cricket Ground Ki Raat Ke ${rules} Rules. Teesra Kabhi Mat Todna 👀'). For a night shift job, name the place, not the job title (e.g. 'POV: Dam Ki Raat Ke ${rules} Rules...'). Never start the title with 'Night Shift'. Any forbidden action must be a real rule from your story",
   "description": "2 short sentences in Roman Urdu that tease the story without spoiling it, and say it is a fictional horror story",
   "tags": ["8 to 12 short tags, mix of English and Roman Urdu, e.g. 'urdu horror story'"],
   "scenes": [ { "voice": "...", "subtitle": "...", "label": "", "image_prompt": "..." } ]
