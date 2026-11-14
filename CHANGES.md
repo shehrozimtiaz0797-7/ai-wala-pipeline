@@ -8,3 +8,9 @@
 - Titles back to the POV form ('POV: <Jagah> Ki Raat Ke N Rules. ... Kabhi Mat ...'). The 'Night Shift: <Job> | N Rules To Survive' titles got 0-3 views in 10-17 h, while POV titles got 6-391.
 - Night-shift settings now picked 35% of the time (was 75%), so more open places like petrol pump / cricket ground.
 - Hook, place-repeat block and 3 videos/day stay.
+
+## 2026-11-14 (23:00 MY) - trend research
+- New 'creatures' list (12 desi folklore encounters: lantern-wali chudail on the bike, backward-feet woman, naag with human eyes...). Picked 40% of the time; night-shift places 20%, other places 40%.
+- Creature titles: '😱 <one shocking line>! 😨 | Horror Story'. Other titles stay POV.
+- Why: the top Hindi/Urdu horror Shorts from 4-14 Nov were folklore creature 'True Horror Story' videos with 0.9M-4.5M views each.
+- Folk creatures allowed; still no jinn, prayers or holy places.
