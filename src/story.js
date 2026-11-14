@@ -47,9 +47,11 @@ function buildPrompt(topic, sceneCount, fmt) {
   const usedSettings = readHistory().slice(-40).map(h => h.setting).filter(Boolean);
   const usedThemes = recentThemes(15);
   const fresh = list => (list || []).filter(x => !usedSettings.includes(x) && !themesOf(x).some(th => usedThemes.has(th)));
-  const first = (look.settingsHot && Math.random() < 0.35) ? look.settingsHot : look.settings;
+  // 40% folklore creature encounters, 20% night-shift places, 40% other places
+  const roll = Math.random();
+  const first = (look.creatures && roll < 0.4) ? look.creatures : ((look.settingsHot && roll < 0.6) ? look.settingsHot : look.settings);
   let options = fresh(first);
-  if (!options.length) options = fresh([...(look.settingsHot || []), ...look.settings]);
+  if (!options.length) options = fresh([...(look.creatures || []), ...(look.settingsHot || []), ...look.settings]);
   const invent = !topic && (!options.length || Math.random() < 0.3);
   const setting = topic || (invent ? '' : options[Math.floor(Math.random() * options.length)]);
   lastSetting = topic ? topic : (invent ? 'invented' : setting);
@@ -85,8 +87,8 @@ Line rules:
 - "subtitle": the SAME line in Roman Urdu (Urdu written in English letters) with EXACTLY the same number of words, in the same order, as "voice" (one Roman word for each Urdu word, so the captions can follow the voice). Keep the punctuation attached to the word it follows. Write the letters A and B as "A" and "B".
 - "label": "RULE 1", "RULE 2"... on rule scenes; "A YA B?" on the last scene; empty string "" on all other scenes.
 - "image_prompt": English, 25-50 words, one clear dark moment for the picture. When the viewer is in the picture write "YOU" in capitals. Never describe a face; strange beings are faceless silhouettes or shadows. No blood, no gore, no weapons, no injuries, no dead bodies, no children in danger. No text or signs in the picture.
-- The number of rules named in the title must be exactly the number of rules in the story.
-- Fiction only. No religion or religious figures (no jinn, prayers or holy places), no real places, brands, people or real tragedies.
+- The number of rules named in the title must be exactly the number of rules in the story. Creature stories still have rules inside the story (how to survive the creature).
+- Fiction only. Folk creatures like a chudail, bhoot, a woman with backward feet or a naag with human eyes are fine. No religion or religious figures (no jinn, prayers or holy places), no real places, brands, people or real tragedies.
 
 Every story must be clearly different from the earlier ones below: a different place AND a different kind of danger. Do not reuse a place, object or twist from them (for example no second 'hotel clerk with a key or card', no second scarecrow story, no second elevator).
 
@@ -95,7 +97,7 @@ ${past}
 
 Return ONLY valid JSON in this exact shape:
 {
-  "title": "curiosity title in Roman Urdu under 70 characters, ALWAYS in the form 'POV: <Jagah> Ki Raat Ke ${rules} Rules. <Doosra/Teesra/Chautha> Kabhi Mat <action> <1 emoji>' (e.g. 'POV: Petrol Pump Ki Raat Ke ${rules} Rules. Chautha Mat Todna 😱', 'POV: Cricket Ground Ki Raat Ke ${rules} Rules. Teesra Kabhi Mat Todna 👀'). For a night shift job, name the place, not the job title (e.g. 'POV: Dam Ki Raat Ke ${rules} Rules...'). Never start the title with 'Night Shift'. Any forbidden action must be a real rule from your story",
+  "title": "curiosity title in Roman Urdu under 70 characters. If the story is a folklore creature encounter (chudail, bhoot, a woman with backward feet, a naag with human eyes...), use the form '😱 <one shocking line in Roman Urdu>! 😨 | Horror Story' (e.g. '😱 Raat Ko Bike Ke Peeche Lantern Wali Budhiya Aa Baithi! 😨 | Horror Story'). Otherwise ALWAYS use the form 'POV: <Jagah> Ki Raat Ke ${rules} Rules. <Doosra/Teesra/Chautha> Kabhi Mat <action> <1 emoji>' (e.g. 'POV: Petrol Pump Ki Raat Ke ${rules} Rules. Chautha Mat Todna 😱', 'POV: Cricket Ground Ki Raat Ke ${rules} Rules. Teesra Kabhi Mat Todna 👀'). For a night shift job, name the place, not the job title (e.g. 'POV: Dam Ki Raat Ke ${rules} Rules...'). Never start the title with 'Night Shift'. Any forbidden action must be a real rule from your story",
   "description": "2 short sentences in Roman Urdu that tease the story without spoiling it, and say it is a fictional horror story",
   "tags": ["8 to 12 short tags, mix of English and Roman Urdu, e.g. 'urdu horror story'"],
   "scenes": [ { "voice": "...", "subtitle": "...", "label": "", "image_prompt": "..." } ]
