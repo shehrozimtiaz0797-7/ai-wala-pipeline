@@ -14,3 +14,6 @@
 - Creature titles: '😱 <one shocking line>! 😨 | Horror Story'. Other titles stay POV.
 - Why: the top Hindi/Urdu horror Shorts from 4-14 Nov were folklore creature 'True Horror Story' videos with 0.9M-4.5M views each.
 - Folk creatures allowed; still no jinn, prayers or holy places.
+
+## 2026-11-14 (23:55 MY)
+- SHORT_SCENES 10 -> 7 (about 30s, 3 rules). Analytics for 1-11 Nov: viewers leave after 13-25s on 45-77s videos (18-42% viewed); the 41s video kept 42%. A shorter video gets a higher % viewed, which YouTube uses to decide on more reach.
