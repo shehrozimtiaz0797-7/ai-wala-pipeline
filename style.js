@@ -19,6 +19,23 @@ module.exports = {
   // (No religion, no real places or brands.)
 
   // Outdoor and rural places got the most views for the sister channel, so these are picked more often.
+  // Desi folklore creature encounters (no religion). In Nov 2026 this kind of 'True Horror Story'
+  // got 1-4M views on Hindi/Urdu Shorts channels (chudail on the bike, naag with human eyes).
+  creatures: [
+    'riding your motorbike home at night on a village road when an old woman with a lantern (chudail) silently sits on the back seat',
+    'a woman in white with backward feet waving for a lift on an empty highway at 2 AM',
+    'a black snake with human eyes that waits outside your door every night after the electricity goes',
+    'the last seat of a night bus where a passenger with no shadow always sits',
+    'a village well where someone calls your name in your mother\'s voice after midnight',
+    'a sugarcane field where a tall figure follows you just behind the crop line',
+    'a lonely banyan tree on your way home where a woman combs her long hair at night',
+    'a night train passenger who asks you the time again and again, and his face changes each time',
+    'a goat that follows you home at night and starts talking when you lock the door',
+    'a wedding procession (baraat) in the middle of the night on a road with no village',
+    'a fruit seller on the highway at 3 AM whose fruit is always fresh but whose cart has no wheels',
+    'an old haveli guard who warns you that the bride on the stairs is not a guest'
+  ],
+
   settingsHot: [
     'your first night shift as a railway crossing gateman on a lonely village line',
     'your first night shift as a guard at a dam control room',
