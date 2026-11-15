@@ -22,3 +22,6 @@
 - Pictures switched from dark 3D renders to a 2D 'bhoot wala cartoon' style (flat colours, black outlines, spooky night colours); YOU is now the same cartoon young man in a white kurta in every picture; beings are cartoon ghosts with glowing eyes. Why: that style gets 1-4M views on Hindi/Urdu horror Shorts, while the realistic look got 0-60 views lately.
 - Every run saves its newest video to the 'qa' branch so it can be checked.
 - Repeat block: the wedding theme now also matches Urdu words (shadi, baraat, dulhan, mehndi). The 15 Nov cartoon test repeated 'Shadi Hall' from 14 Nov because Urdu titles did not match 'wedding'.
+
+## 2026-11-15 (21:00 MY)
+- Owner request: same times as Empire Maps. 3 videos a day at 2:50am, 12:50pm, 10:50pm Malaysia time (gate hours 02 12 22, only cron calls at :50). Needs one cron-job.org job: 50 02,12,22 * * * (Asia/Kuala_Lumpur); the old :45 jobs are ignored.
