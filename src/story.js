@@ -28,7 +28,7 @@ const THEMES = [
   ['hospital'], ['flat', 'apartment', 'landlord', 'neighbour', 'neighbor', 'room 4b'], ['mela', 'fairground', 'amusement'],
   ['library'], ['elevator', 'lift'], ['mall', 'plaza'], ['hotel'], ['flight', 'plane'], ['scarecrow', 'cornfield', 'farm', 'field', 'orchard'],
   ['forest', 'ranger', 'jungle', 'campground', 'camping'], ['road', 'gps', 'drive', 'highway', 'motorway', 'dhaba'],
-  ['cricket', 'ground', 'stadium'], ['wedding'], ['call centre', 'call center'], ['museum'], ['lighthouse'], ['cruise', 'ship'],
+  ['cricket', 'ground', 'stadium'], ['wedding', 'shadi', 'baraat', 'dulhan', 'mehndi'], ['call centre', 'call center'], ['museum'], ['lighthouse'], ['cruise', 'ship'],
   ['babysit'], ['workshop'], ['atm', 'bank'], ['parking'], ['school'], ['mountain', 'snow', 'cable car'], ['swamp'], ['desert'],
 ];
 function themesOf(text) {
