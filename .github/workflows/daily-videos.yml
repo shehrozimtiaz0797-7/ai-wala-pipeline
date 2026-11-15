@@ -129,6 +129,22 @@ jobs:
             git push || echo "Could not save history"
           fi
 
+      - name: Save a preview for checking (qa branch, newest video only)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          D=$(ls -d output/*/ 2>/dev/null | tail -1)
+          if [ -z "$D" ] || [ ! -f "$D/final.mp4" ]; then echo "no video"; exit 0; fi
+          mkdir -p /tmp/qa
+          cp "$D/final.mp4" "$D/story.json" /tmp/qa/ 2>/dev/null || true
+          cp logs/pipeline.log /tmp/qa/ 2>/dev/null || true
+          cd /tmp/qa
+          git init -q -b qa
+          git add .
+          git -c user.name=ai-wala-bot -c user.email=ai-wala-bot@users.noreply.github.com commit -qm "preview $(date +'%Y-%m-%d %H:%M')"
+          git push -qf "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" qa || echo "could not save preview"
+
       - name: Keep the video for 2 days (download from this page)
         if: always()
         uses: actions/upload-artifact@v4

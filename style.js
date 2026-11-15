@@ -1,19 +1,20 @@
 // AI Wala (Urdu horror) — art style, the "YOU" figure, and story settings.
 // These words are added to every picture prompt so every video has the same look.
 module.exports = {
+  // Nov 2026: cartoon test. Hindi/Urdu 'bhoot wala cartoon' horror Shorts get 1-4M views; the old dark 3D look did not.
   style:
-    'dark cinematic 3D render, eerie liminal atmosphere, low-key moody lighting, deep shadows, ' +
-    'desaturated cold blue and black colours with one small dim red accent light, light volumetric fog, ' +
-    'film grain, unsettling quiet mood, psychological horror, no gore, no text, no letters, no watermark',
+    '2D cartoon animation still, Indian horror cartoon style (bhoot wala cartoon), flat bold colours, thick clean black outlines, ' +
+    'simple cel shading, spooky night scene, deep blue and purple night, glowing yellow moon or lantern light, eerie green glow, ' +
+    'creepy but not gory, expressive cartoon acting, no text, no letters, no watermark',
 
   // The viewer ("aap") is always shown as the same faceless figure.
   you:
-    'YOU: a faceless smooth pale-grey mannequin-like human figure with a plain blank head and no facial features, ' +
-    'wearing a dark hoodie and dark trousers',
+    'YOU: the same cartoon young South Asian man in every picture, plain white kurta and dark trousers, short black hair, ' +
+    'simple flat cartoon face with big round expressive eyes, slim build',
 
   // Strange beings are always faceless or hidden, never gory.
   creature:
-    'a tall thin faceless shadowy figure, silhouette only, partly hidden in darkness',
+    'a spooky cartoon ghost (bhoot or chudail) with glowing white eyes, dark flowing shape and long messy hair, creepy not gory',
 
   // Where the stories happen. The story writer picks one when no topic is given.
   // (No religion, no real places or brands.)

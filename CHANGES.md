@@ -17,3 +17,7 @@
 
 ## 2026-11-14 (23:55 MY)
 - SHORT_SCENES 10 -> 7 (about 30s, 3 rules). Analytics for 1-11 Nov: viewers leave after 13-25s on 45-77s videos (18-42% viewed); the 41s video kept 42%. A shorter video gets a higher % viewed, which YouTube uses to decide on more reach.
+
+## 2026-11-15 (11:00 MY) - cartoon test
+- Pictures switched from dark 3D renders to a 2D 'bhoot wala cartoon' style (flat colours, black outlines, spooky night colours); YOU is now the same cartoon young man in a white kurta in every picture; beings are cartoon ghosts with glowing eyes. Why: that style gets 1-4M views on Hindi/Urdu horror Shorts, while the realistic look got 0-60 views lately.
+- Every run saves its newest video to the 'qa' branch so it can be checked.
