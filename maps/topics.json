@@ -1,0 +1,692 @@
+[
+ {
+  "id": "pakistan",
+  "label": "PAKISTAN",
+  "name": "Pakistan",
+  "names": [
+   "British Raj",
+   "Pakistan"
+  ],
+  "years": [
+   1880,
+   1938,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from British India to the partition of 1947 and the separation of East Pakistan in 1971",
+  "labels": {
+   "1880": "BRITISH INDIA",
+   "1938": "BRITISH INDIA",
+   "1960": "PAKISTAN",
+   "1994": "PAKISTAN"
+  }
+ },
+ {
+  "id": "afghanistan",
+  "label": "AFGHANISTAN",
+  "name": "Afghanistan",
+  "names": [
+   "Afghanistan"
+  ],
+  "years": [
+   1783,
+   1815,
+   1880,
+   1900,
+   1938,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from the Durrani Empire to its modern borders, the Great Game and the Durand Line",
+  "labels": {}
+ },
+ {
+  "id": "iran",
+  "label": "IRAN",
+  "name": "Iran (Persia)",
+  "names": [
+   "Persia",
+   "Iran"
+  ],
+  "years": [
+   1783,
+   1815,
+   1880,
+   1914,
+   1938,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "how Persia lost the Caucasus and Central Asia and became modern Iran",
+  "labels": {
+   "1783": "PERSIA",
+   "1815": "PERSIA",
+   "1880": "PERSIA",
+   "1914": "PERSIA",
+   "1938": "IRAN",
+   "1994": "IRAN"
+  }
+ },
+ {
+  "id": "india",
+  "label": "INDIA",
+  "name": "India",
+  "names": [
+   "British East India Company",
+   "British Raj",
+   "India"
+  ],
+  "years": [
+   1815,
+   1880,
+   1938,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from the East India Company to British India to independence in 1947",
+  "labels": {
+   "1815": "EAST INDIA COMPANY",
+   "1880": "BRITISH INDIA",
+   "1960": "INDIA",
+   "1994": "INDIA"
+  }
+ },
+ {
+  "id": "turkey",
+  "label": "TURKEY",
+  "name": "Turkey",
+  "names": [
+   "Ottoman Empire",
+   "Ottoman Sultanate",
+   "Turkey"
+  ],
+  "years": [
+   1815,
+   1880,
+   1914,
+   1920,
+   1938
+  ],
+  "peak": 1938,
+  "angles": [
+   "full"
+  ],
+  "story": "how the Ottoman Empire shrank and Ataturk founded modern Turkey",
+  "labels": {
+   "1815": "OTTOMAN EMPIRE",
+   "1880": "OTTOMAN EMPIRE",
+   "1914": "OTTOMAN EMPIRE",
+   "1920": "OTTOMAN EMPIRE",
+   "1938": "TURKEY"
+  }
+ },
+ {
+  "id": "ussr",
+  "label": "USSR",
+  "name": "Russia and the Soviet Union",
+  "names": [
+   "Russian Empire",
+   "USSR",
+   "Russia"
+  ],
+  "years": [
+   1815,
+   1914,
+   1938,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from the Russian Empire to the USSR and its break-up into 15 countries in 1991",
+  "labels": {
+   "1815": "RUSSIAN EMPIRE",
+   "1914": "RUSSIAN EMPIRE",
+   "1938": "USSR",
+   "1960": "USSR",
+   "1994": "RUSSIA"
+  }
+ },
+ {
+  "id": "china",
+  "label": "CHINA",
+  "name": "China",
+  "names": [
+   "Manchu Empire",
+   "China"
+  ],
+  "years": [
+   1700,
+   1815,
+   1900,
+   1945,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from the Qing dynasty to the Republic and the People's Republic",
+  "labels": {
+   "1700": "QING CHINA",
+   "1815": "QING CHINA",
+   "1900": "QING CHINA",
+   "1945": "CHINA",
+   "1994": "CHINA"
+  }
+ },
+ {
+  "id": "malaysia",
+  "label": "MALAYSIA",
+  "name": "Malaysia",
+  "names": [
+   "Malaya",
+   "Malaysia"
+  ],
+  "years": [
+   1815,
+   1900,
+   1938,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from British Malaya to independence in 1957 and the forming of Malaysia in 1963",
+  "labels": {
+   "1815": "BRITISH MALAYA",
+   "1900": "BRITISH MALAYA",
+   "1938": "BRITISH MALAYA",
+   "1960": "MALAYSIA",
+   "1994": "MALAYSIA"
+  }
+ },
+ {
+  "id": "indonesia",
+  "label": "INDONESIA",
+  "name": "Indonesia",
+  "names": [
+   "Dutch East Indies",
+   "Indonesia"
+  ],
+  "years": [
+   1700,
+   1815,
+   1938,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from the Dutch East Indies to independent Indonesia",
+  "labels": {
+   "1700": "DUTCH EAST INDIES",
+   "1815": "DUTCH EAST INDIES",
+   "1938": "DUTCH EAST INDIES",
+   "1960": "INDONESIA",
+   "1994": "INDONESIA"
+  }
+ },
+ {
+  "id": "korea",
+  "label": "KOREA",
+  "name": "Korea",
+  "names": [
+   "Korea",
+   "Korea (USA)",
+   "Korea (USSR)",
+   "Korea, Democratic People's Republic of",
+   "Korea, Republic of"
+  ],
+  "years": [
+   1880,
+   1900,
+   1945,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "how one Korea was taken by Japan and then split into North and South",
+  "labels": {}
+ },
+ {
+  "id": "germany",
+  "label": "GERMANY",
+  "name": "Germany",
+  "names": [
+   "Prussia",
+   "Germany",
+   "West Germany"
+  ],
+  "years": [
+   1783,
+   1815,
+   1880,
+   1920,
+   1938,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "from Prussia to the German Empire, two world wars, division and reunification",
+  "labels": {
+   "1783": "PRUSSIA",
+   "1815": "PRUSSIA",
+   "1880": "GERMANY",
+   "1920": "GERMANY",
+   "1938": "GERMANY",
+   "1960": "WEST GERMANY",
+   "1994": "GERMANY"
+  }
+ },
+ {
+  "id": "poland",
+  "label": "POLAND",
+  "name": "Poland",
+  "names": [
+   "Poland",
+   "Poland-Lithuania"
+  ],
+  "years": [
+   1300,
+   1400,
+   1600,
+   1783,
+   1920,
+   1945,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "a country that grew huge, was wiped off the map, came back and moved west",
+  "labels": {
+   "1300": "POLAND",
+   "1400": "POLAND-LITHUANIA",
+   "1600": "POLAND-LITHUANIA",
+   "1783": "POLAND",
+   "1920": "POLAND",
+   "1945": "POLAND",
+   "1994": "POLAND"
+  }
+ },
+ {
+  "id": "yugoslavia",
+  "label": "YUGOSLAVIA",
+  "name": "Yugoslavia",
+  "names": [
+   "Serbia",
+   "Yugoslavia"
+  ],
+  "years": [
+   1880,
+   1914,
+   1920,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "how Yugoslavia was formed and then broke into seven countries",
+  "labels": {
+   "1880": "SERBIA",
+   "1914": "SERBIA",
+   "1920": "YUGOSLAVIA",
+   "1960": "YUGOSLAVIA",
+   "1994": "SERBIA"
+  }
+ },
+ {
+  "id": "austria",
+  "label": "AUSTRIA",
+  "name": "Austria",
+  "names": [
+   "Austrian Empire",
+   "Austria Hungary",
+   "Austro-Hungarian Empire",
+   "Austria"
+  ],
+  "years": [
+   1783,
+   1815,
+   1880,
+   1914,
+   1920,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "how the giant Austro-Hungarian Empire became tiny Austria",
+  "labels": {
+   "1783": "AUSTRIAN EMPIRE",
+   "1815": "AUSTRIAN EMPIRE",
+   "1880": "AUSTRIA-HUNGARY",
+   "1914": "AUSTRIA-HUNGARY",
+   "1920": "AUSTRIA",
+   "1960": "AUSTRIA"
+  }
+ },
+ {
+  "id": "italy",
+  "label": "ITALY",
+  "name": "Italy",
+  "names": [
+   "Kingdom of Sardinia",
+   "Italy",
+   "Kingdom of Italy"
+  ],
+  "years": [
+   1783,
+   1815,
+   1880,
+   1914,
+   1938,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "how many small states became one Italy",
+  "labels": {
+   "1783": "SARDINIA",
+   "1815": "SARDINIA",
+   "1880": "ITALY",
+   "1914": "ITALY",
+   "1938": "ITALY",
+   "1960": "ITALY"
+  }
+ },
+ {
+  "id": "egypt",
+  "label": "EGYPT",
+  "name": "Egypt",
+  "names": [
+   "Egypt"
+  ],
+  "years": [
+   1815,
+   1880,
+   1914,
+   1938,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "modern Egypt from Muhammad Ali to independence",
+  "labels": {}
+ },
+ {
+  "id": "morocco",
+  "label": "MOROCCO",
+  "name": "Morocco",
+  "names": [
+   "Morocco",
+   "Morocco (France)"
+  ],
+  "years": [
+   1700,
+   1815,
+   1900,
+   1938,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "Morocco from sultanate to French protectorate to independence",
+  "labels": {
+   "1700": "MOROCCO",
+   "1815": "MOROCCO",
+   "1900": "MOROCCO",
+   "1938": "FRENCH MOROCCO",
+   "1960": "MOROCCO"
+  }
+ },
+ {
+  "id": "oman",
+  "label": "OMAN",
+  "name": "Oman",
+  "names": [
+   "Oman",
+   "Muscat and Oman"
+  ],
+  "years": [
+   1700,
+   1815,
+   1880,
+   1938,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "the Omani empire that once ruled Zanzibar and Gwadar",
+  "labels": {}
+ },
+ {
+  "id": "nepal",
+  "label": "NEPAL",
+  "name": "Nepal",
+  "names": [
+   "Nepal"
+  ],
+  "years": [
+   1783,
+   1815,
+   1880,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "how Nepal grew and then lost land to the British in 1816",
+  "labels": {}
+ },
+ {
+  "id": "ethiopia",
+  "label": "ETHIOPIA",
+  "name": "Ethiopia",
+  "names": [
+   "Ethiopia",
+   "Ethiopia (Italy)"
+  ],
+  "years": [
+   1880,
+   1900,
+   1938,
+   1960,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "the African country that beat Italy at Adwa and lost Eritrea in 1993",
+  "labels": {
+   "1880": "ETHIOPIA",
+   "1900": "ETHIOPIA",
+   "1938": "ITALIAN ETHIOPIA",
+   "1960": "ETHIOPIA",
+   "1994": "ETHIOPIA"
+  }
+ },
+ {
+  "id": "greece",
+  "label": "GREECE",
+  "name": "Greece",
+  "names": [
+   "Greece"
+  ],
+  "years": [
+   1880,
+   1900,
+   1914,
+   1920,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "how Greece grew step by step after independence",
+  "labels": {}
+ },
+ {
+  "id": "romania",
+  "label": "ROMANIA",
+  "name": "Romania",
+  "names": [
+   "Romania"
+  ],
+  "years": [
+   1880,
+   1914,
+   1920,
+   1945,
+   1994
+  ],
+  "peak": 1994,
+  "angles": [
+   "full"
+  ],
+  "story": "how Romania doubled in size after World War One",
+  "labels": {}
+ },
+ {
+  "id": "algeria",
+  "label": "ALGERIA",
+  "name": "Algeria",
+  "names": [
+   "Algeria (FR)",
+   "Algeria",
+   "Algeria (France)"
+  ],
+  "years": [
+   1880,
+   1900,
+   1938,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "from French Algeria to independence in 1962",
+  "labels": {
+   "1880": "FRENCH ALGERIA",
+   "1900": "FRENCH ALGERIA",
+   "1938": "FRENCH ALGERIA",
+   "1960": "ALGERIA"
+  }
+ },
+ {
+  "id": "canada",
+  "label": "CANADA",
+  "name": "Canada",
+  "names": [
+   "Canada"
+  ],
+  "years": [
+   1815,
+   1880,
+   1914,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "how Canada grew from a few colonies to the second largest country",
+  "labels": {}
+ },
+ {
+  "id": "brazil",
+  "label": "BRAZIL",
+  "name": "Brazil",
+  "names": [
+   "Portuguese Brazil",
+   "Viceroyalty of Brazil",
+   "Kingdom of Brazil",
+   "Brazil"
+  ],
+  "years": [
+   1650,
+   1715,
+   1815,
+   1880,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "how Portuguese Brazil pushed west to become huge",
+  "labels": {
+   "1650": "PORTUGUESE BRAZIL",
+   "1715": "PORTUGUESE BRAZIL",
+   "1815": "PORTUGUESE BRAZIL",
+   "1880": "BRAZIL",
+   "1960": "BRAZIL"
+  }
+ },
+ {
+  "id": "usa",
+  "label": "USA",
+  "name": "the United States",
+  "names": [
+   "United States of America",
+   "United States"
+  ],
+  "years": [
+   1783,
+   1800,
+   1815,
+   1880,
+   1914,
+   1960
+  ],
+  "peak": 1960,
+  "angles": [
+   "full"
+  ],
+  "story": "how 13 colonies became a country from ocean to ocean",
+  "labels": {}
+ }
+]
