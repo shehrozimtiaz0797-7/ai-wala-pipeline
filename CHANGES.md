@@ -32,3 +32,4 @@
 - 00:50 MY: own colours for this channel (maps/theme.py, theme 'naqsha') so it does not look like Empire Maps.
 - 16 Nov 11:30 MY: Naqsha Wala slots changed on owner request: calls at 22:50, 00:50, 02:50 MY so videos are live about 11pm, 1am, 3am. cron-job.org: 50 22,0,2 * * *
 - 17 Nov 18:30 MY: for more views: hook in the first 2 seconds, Shorts now 30-38 s (max 5 map years, 7-13 words per line), last line loops back into the first line.
+- 18 Nov 02:15 MY: fixed render crash 'box offset can't be negative' (camera crop a hair wider than the map when fully zoomed out; hit the Reconquista Short). Patch applied in maps/theme.py.
