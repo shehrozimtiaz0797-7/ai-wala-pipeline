@@ -31,3 +31,4 @@
 - AI Wala is now a map channel: "how countries got their borders", Urdu voice + Roman Urdu captions (brand NAQSHA WALA). Uses the Empire Maps engine pinned at 2b676f2 + maps/topics.json + maps/script.js. Old horror code is kept but not used. Same slots (2:50am, 12:50pm, 10:50pm MY). Horror videos stopped (0-5 views each). Videos already on the channel are not touched.
 - 00:50 MY: own colours for this channel (maps/theme.py, theme 'naqsha') so it does not look like Empire Maps.
 - 16 Nov 11:30 MY: Naqsha Wala slots changed on owner request: calls at 22:50, 00:50, 02:50 MY so videos are live about 11pm, 1am, 3am. cron-job.org: 50 22,0,2 * * *
+- 17 Nov 18:30 MY: for more views: hook in the first 2 seconds, Shorts now 30-38 s (max 5 map years, 7-13 words per line), last line loops back into the first line.
