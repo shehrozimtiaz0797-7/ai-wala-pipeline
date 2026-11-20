@@ -33,3 +33,5 @@
 - 16 Nov 11:30 MY: Naqsha Wala slots changed on owner request: calls at 22:50, 00:50, 02:50 MY so videos are live about 11pm, 1am, 3am. cron-job.org: 50 22,0,2 * * *
 - 17 Nov 18:30 MY: for more views: hook in the first 2 seconds, Shorts now 30-38 s (max 5 map years, 7-13 words per line), last line loops back into the first line.
 - 18 Nov 02:15 MY: fixed render crash 'box offset can't be negative' (camera crop a hair wider than the map when fully zoomed out; hit the Reconquista Short). Patch applied in maps/theme.py.
+
+* 2026-11-21: back to the horror POV Shorts (owner request: "jesy phely tha wesa"). The workflow is the last horror version (before 'Switch to map videos'), with the current cron-job.org slot hours kept. maps/ files stay unused.
