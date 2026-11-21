@@ -1,0 +1,61 @@
+{
+  "title": "POV: Purane Gaon Ke Kuwe Ke 3 Rules. Teesra Kabhi Mat Todna 😱",
+  "description": "Raat ko gaon ke purane kuwe ke paas akele mat jaana. Yeh aik farzi aur khaufnak kahani hai.",
+  "tags": [
+    "urdu horror story",
+    "village horror",
+    "pakistani horror",
+    "scary stories",
+    "rules horror",
+    "kuwa horror",
+    "ghost story",
+    "creepy pov",
+    "ai wala"
+  ],
+  "scenes": [
+    {
+      "subtitle": "Kuwe se maa ki awaz aa rahi hai.",
+      "voice": "Kuwe se maa ki awaz aa rahi hai۔",
+      "label": "",
+      "image_prompt": "A close up cartoon shot of YOU standing frozen in absolute terror near a dark deep village well at night, staring down into the black water as a pale ghostly hand reaches up from the rim."
+    },
+    {
+      "subtitle": "Purane buzurgon ne teen sakht rules likhe thay.",
+      "voice": "Purane buzurgon ne teen sakht rules likhe thay۔",
+      "label": "",
+      "image_prompt": "A cartoon shot of YOU looking at a yellowed handwritten note on old paper under a dim lantern light, trembling in a dark village street."
+    },
+    {
+      "subtitle": "Pehla rule: kuwe ke paas raat ko mat jaana.",
+      "voice": "پہلا رول: kuwe ke paas raat ko mat jaana۔",
+      "label": "RULE 1",
+      "image_prompt": "A cartoon shot of YOU standing far away from a spooky old stone well in a lonely village courtyard at midnight, holding a lantern and looking nervous."
+    },
+    {
+      "subtitle": "Doosra rule: pani mein kabhi apna chehra mat dekhna.",
+      "voice": "دوسرا رول: pani mein kabhi apna chehra mat dekhna۔",
+      "label": "RULE 2",
+      "image_prompt": "A cartoon shot of YOU standing near the well edge, deliberately keeping your head turned away from the dark water below to avoid looking down."
+    },
+    {
+      "subtitle": "Teesra rule: apnon ki awaz sun kar peechhe mat mudna.",
+      "voice": "تیسرا رول: apnon ki awaz sun kar peechhe mat mudna۔",
+      "label": "RULE 3",
+      "image_prompt": "A cartoon shot of YOU standing straight with your back to the camera, hands shaking, ignoring a soft ghostly voice calling your name from the dark."
+    },
+    {
+      "subtitle": "Aapne doosra rule tod kar pani mein dekh liya.",
+      "voice": "Aapne doosra rule tod kar pani mein dekh liya۔",
+      "label": "",
+      "image_prompt": "A cartoon shot of YOU leaning over the dark well water, staring down in shock as the water reflects a terrifying glowing-eyed face that is not yours."
+    },
+    {
+      "subtitle": "Aap kya karenge? A, kuwe mein utar jayein, ya B, wahan se bhaag jayein? Comment mein A ya B likhein.",
+      "voice": "Aap kya karenge؟ A، kuwe mein utar jayein، ya B، wahan se bhaag jayein؟ Comment mein A ya B likhein۔",
+      "label": "A YA B?",
+      "image_prompt": "A cartoon shot of YOU standing in the dark village pathway, looking back in extreme panic at the tall shadow rising from the well behind you."
+    }
+  ],
+  "setting": "a village well where someone calls your name in your mother's voice after midnight",
+  "kind": "short"
+}
